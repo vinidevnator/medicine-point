@@ -22,6 +22,7 @@ export async function createProductAction(_prev: ProductState, formData: FormDat
     preco: String(formData.get("preco") ?? ""),
     quantidade: String(formData.get("quantidade") ?? ""),
     imagePath: String(formData.get("imagePath") ?? ""),
+    category: String(formData.get("category") ?? ""),
   };
   const parsed = productSchema.safeParse(raw);
   if (!parsed.success) {
@@ -44,6 +45,7 @@ export async function createProductAction(_prev: ProductState, formData: FormDat
     precoCents: parseBRLToCents(d.preco),
     quantidade: Number(onlyDigits(d.quantidade)),
     imagePath: d.imagePath || `/img/med-generico.svg`,
+    category: d.category,
   });
   revalidatePath("/dashboard/produtos");
   return { ok: true };
@@ -59,6 +61,7 @@ export async function updateProductAction(_prev: ProductState, formData: FormDat
     preco: String(formData.get("preco") ?? ""),
     quantidade: String(formData.get("quantidade") ?? ""),
     imagePath: String(formData.get("imagePath") ?? ""),
+    category: String(formData.get("category") ?? ""),
   };
   const parsed = productSchema.safeParse(raw);
   if (!parsed.success) {
@@ -76,6 +79,7 @@ export async function updateProductAction(_prev: ProductState, formData: FormDat
     precoCents: parseBRLToCents(d.preco),
     quantidade: Number(onlyDigits(d.quantidade)),
     imagePath: d.imagePath || product.imagePath,
+    category: d.category,
   });
   revalidatePath("/dashboard/produtos");
   return { ok: true };

@@ -1,0 +1,1 @@
+ALTER TABLE `products` ADD `category` text DEFAULT 'respiratorio' NOT NULL;

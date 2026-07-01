@@ -91,7 +91,13 @@ export function AvailabilityClient({ ean }: { ean: string }) {
 
   return (
     <div className="mt-4 space-y-4">
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          buscar();
+        }}
+        className="flex flex-col gap-2 sm:flex-row"
+      >
         <Input
           inputMode="numeric"
           placeholder="00000-000"
@@ -100,10 +106,10 @@ export function AvailabilityClient({ ean }: { ean: string }) {
           onChange={(e) => setCep(maskCEP(e.target.value))}
           aria-label="CEP"
         />
-        <Button type="button" onClick={buscar} disabled={loading}>
+        <Button type="submit" disabled={loading}>
           {loading ? "Buscando…" : "Buscar disponibilidade"}
         </Button>
-      </div>
+      </form>
       {erro && <p className="text-sm text-danger" role="alert">{erro}</p>}
 
       {offerings.length > 0 && (

@@ -2,10 +2,12 @@ import { randomUUID } from "node:crypto";
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { eq, ne } from "drizzle-orm";
 import * as schema from "./schema";
 import { users, pharmacies, pharmacySettings, products } from "./schema";
 import bcrypt from "bcryptjs";
 import path from "node:path";
+import { DC_PHARMACY_ID } from "../lib/constants";
 
 const DB_PATH = path.resolve(process.cwd(), "medicine-point.db");
 const MIGRATIONS_FOLDER = path.resolve(process.cwd(), "db/migrations");
@@ -18,6 +20,7 @@ const SEED_PRODUCTS = [
     precoCents: 3990,
     quantidade: 100,
     imagePath: "/img/med-respiratorio.svg",
+    category: "respiratorio" as const,
   },
   {
     ean: "7890000000002",
@@ -26,6 +29,7 @@ const SEED_PRODUCTS = [
     precoCents: 8990,
     quantidade: 80,
     imagePath: "/img/med-hipertensao.svg",
+    category: "cardio" as const,
   },
   {
     ean: "7890000000003",
@@ -34,8 +38,50 @@ const SEED_PRODUCTS = [
     precoCents: 1990,
     quantidade: 250,
     imagePath: "/img/med-febre.svg",
+    category: "analgesico" as const,
   },
 ] as const;
+
+function ensureDcPharmacy(db: ReturnType<typeof drizzle>): void {
+  const dc = db.select().from(pharmacies).where(eq(pharmacies.id, DC_PHARMACY_ID)).get();
+  if (dc) return;
+
+  db.transaction((tx) => {
+    tx.insert(pharmacies)
+      .values({
+        id: DC_PHARMACY_ID,
+        cnpj: "00.000.000/0001-00",
+        razaoSocial: "Centro de Distribuição Medicine Point",
+        nomeFantasia: "Centro de Distribuição",
+        email: "dc@medicinepoint.internal",
+        cep: "00000-000",
+        logradouro: "Centro de Distribuição",
+        numero: "0",
+        complemento: "",
+        bairro: "-",
+        cidade: "-",
+        estado: "SP",
+        faturamento: "acima_500k",
+        lat: -23.5616,
+        lng: -46.6561,
+      })
+      .run();
+
+    tx.insert(pharmacySettings)
+      .values({
+        id: randomUUID(),
+        pharmacyId: DC_PHARMACY_ID,
+        cepBase: "00000-000",
+        raioKm: 1,
+        aceitaRetirada: false,
+        aceitaMoto: false,
+        freteMotoCents: 0,
+      })
+      .run();
+  });
+
+  console.log("[seed] Centro de Distribuição virtual pharmacy created.");
+}
 
 function run() {
   const sqlite = new Database(DB_PATH);
@@ -47,7 +93,9 @@ function run() {
   migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
   sqlite.pragma("foreign_keys = ON");
 
-  const existing = db.select().from(pharmacies).limit(1).all();
+  ensureDcPharmacy(db);
+
+  const existing = db.select().from(pharmacies).where(ne(pharmacies.id, DC_PHARMACY_ID)).limit(1).all();
   if (existing.length > 0) {
     console.log("[seed] demo pharmacy already exists — skipping.");
     return;
@@ -111,6 +159,7 @@ function run() {
           precoCents: p.precoCents,
           quantidade: p.quantidade,
           imagePath: p.imagePath,
+          category: p.category,
         })
         .run();
     }

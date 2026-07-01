@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { parseBRLToCents } from "@/lib/format";
+import { onlyDigits } from "@/lib/masks";
+import { CATEGORIES } from "@/lib/constants";
 
 const cnpjRegex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
 const cepRegex = /^\d{5}-\d{3}$/;
@@ -33,9 +36,16 @@ export const productSchema = z.object({
   ean: z.string().regex(eanRegex, { error: "EAN deve ter 13 dígitos" }),
   nome: z.string().min(3, { error: "Informe o nome" }),
   descricao: z.string().min(3, { error: "Informe a descrição" }),
-  preco: z.string().min(1, { error: "Preço inválido" }),
-  quantidade: z.string().min(1, { error: "Quantidade inválida" }),
+  preco: z
+    .string()
+    .min(1, { error: "Preço inválido" })
+    .refine((v) => parseBRLToCents(v) > 0, { error: "Informe um preço válido maior que zero" }),
+  quantidade: z
+    .string()
+    .min(1, { error: "Quantidade inválida" })
+    .refine((v) => onlyDigits(v).length > 0, { error: "Quantidade deve conter apenas números" }),
   imagePath: z.string().optional().default(""),
+  category: z.enum(CATEGORIES.map((c) => c.slug) as [string, ...string[]], { error: "Selecione uma categoria" }),
 });
 
 export const settingsSchema = z.object({

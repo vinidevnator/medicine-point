@@ -1,7 +1,7 @@
 import "server-only";
 import { pharmacyRepo, productRepo } from "@/repositories";
 import { cepToCoords, haversineKm } from "@/lib/cep-data";
-import { DELIVERY_TIPOS } from "@/lib/constants";
+import { DELIVERY_TIPOS, DC_PHARMACY_ID } from "@/lib/constants";
 
 export type PharmacyOffering = {
   pharmacyId: string;
@@ -28,7 +28,9 @@ export const searchService = {
    */
   findByEanAndCep(ean: string, cep: string): PharmacyOffering[] {
     const clientCoords = cepToCoords(cep);
-    const allPharmacies = pharmacyRepo.allWithSettings();
+    // The DC virtual pharmacy is presented via the synthetic block below only;
+    // exclude it here so it never appears twice or with the wrong tempo/distance.
+    const allPharmacies = pharmacyRepo.allWithSettings().filter((r) => r.pharmacy.id !== DC_PHARMACY_ID);
     const allProducts = productRepo.getByEanGlobal(ean);
 
     const offerings: PharmacyOffering[] = [];
@@ -73,12 +75,14 @@ export const searchService = {
 
     offerings.sort((a, b) => a.distanciaKm - b.distanciaKm);
 
-    if (!offerings.some((o) => o.nomeFantasia === "Centro de Distribuição")) {
-      const dcTemp = DC_TEMP_BY_DISTANCE[0];
+    if (!offerings.some((o) => o.pharmacyId === DC_PHARMACY_ID)) {
+      const dcRow = pharmacyRepo.get(DC_PHARMACY_ID);
+      const dcDistance = dcRow ? haversineKm(clientCoords, { lat: dcRow.lat, lng: dcRow.lng }) : 0;
+      const dcTemp = DC_TEMP_BY_DISTANCE.find((b) => dcDistance <= b.maxKm) ?? DC_TEMP_BY_DISTANCE[DC_TEMP_BY_DISTANCE.length - 1];
       offerings.push({
-        pharmacyId: "dc",
+        pharmacyId: DC_PHARMACY_ID,
         nomeFantasia: "Centro de Distribuição",
-        distanciaKm: 0,
+        distanciaKm: Math.round(dcDistance * 10) / 10,
         quantidade: 999,
         precoCents: offerings[0]?.precoCents ?? 3990,
         tempoEstimadoMin: dcTemp.min,

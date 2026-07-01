@@ -120,10 +120,13 @@ export const productRepo = {
     db.delete(products).where(eq(products.id, id)).run();
   },
   listDistinctEans() {
-    const rows = db.select({ ean: products.ean, nome: products.nome, descricao: products.descricao }).from(products).all();
-    const map = new Map<string, { ean: string; nome: string; descricao: string }>();
+    const rows = db
+      .select({ ean: products.ean, nome: products.nome, descricao: products.descricao, category: products.category })
+      .from(products)
+      .all();
+    const map = new Map<string, { ean: string; nome: string; descricao: string; category: string }>();
     for (const r of rows) {
-      if (!map.has(r.ean)) map.set(r.ean, { ean: r.ean, nome: r.nome, descricao: r.descricao });
+      if (!map.has(r.ean)) map.set(r.ean, { ean: r.ean, nome: r.nome, descricao: r.descricao, category: r.category });
     }
     return [...map.values()];
   },

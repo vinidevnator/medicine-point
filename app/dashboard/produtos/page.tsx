@@ -49,6 +49,7 @@ export default async function ProdutosPage() {
                   initial={{
                     id: p.id, ean: p.ean, nome: p.nome, descricao: p.descricao,
                     precoCents: p.precoCents, quantidade: p.quantidade, imagePath: p.imagePath,
+                    category: p.category,
                   }}
                   trigger={<Button variant="outline" size="sm" className="flex-1">Editar</Button>}
                 />

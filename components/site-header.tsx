@@ -79,6 +79,26 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
       </div>
 
       <Drawer open={open} onClose={() => setOpen(false)} title="Navegação">
+        {showSearch && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = query.trim();
+              setOpen(false);
+              router.push(q ? `/busca?q=${encodeURIComponent(q)}` : "/busca");
+            }}
+            className="mb-4 flex gap-2"
+          >
+            <Input
+              type="search"
+              placeholder="Buscar medicamentos…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Buscar medicamentos"
+            />
+            <Button type="submit">Buscar</Button>
+          </form>
+        )}
         <ul className="flex flex-col">
           {navLinks.map((l) => (
             <li key={l.href}>

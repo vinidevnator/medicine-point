@@ -10,9 +10,11 @@ export type ProductCardData = {
   descricao: string;
   precoCents: number;
   imagePath: string;
+  quantidade?: number;
 };
 
 export function ProductCard({ product }: { product: ProductCardData }) {
+  const inStock = (product.quantidade ?? 0) > 0;
   return (
     <Link href={`/medicamento/${product.ean}`} className="group block">
       <Card className="overflow-hidden p-0 transition hover:shadow-md hover:border-primary/40">
@@ -30,7 +32,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{product.descricao}</p>
           <div className="mt-3 flex items-center justify-between">
             <span className="text-lg font-bold text-primary">{formatBRL(product.precoCents)}</span>
-            <Badge tone="success">Disponível</Badge>
+            <Badge tone={inStock ? "success" : "danger"}>{inStock ? "Disponível" : "Esgotado"}</Badge>
           </div>
         </div>
       </Card>

@@ -21,3 +21,5 @@ export const DELIVERY_TIPOS = {
 } as const;
 
 export const SP_BBOX = { minLat: -23.9, maxLat: -23.3, minLng: -46.9, maxLng: -46.3 };
+
+export const DC_PHARMACY_ID = "dc";

@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:https": "next dev --experimental-https",
     "predev": "tsx scripts/bootstrap.ts",
+    "predev:https": "tsx scripts/bootstrap.ts",
     "build": "next build",
     "prebuild": "tsx scripts/bootstrap.ts",
     "start": "next start",

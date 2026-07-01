@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/constants";
+import { CATEGORIES, DC_PHARMACY_ID } from "@/lib/constants";
 import { productRepo, pharmacyRepo } from "@/repositories";
 import { ProductCard } from "@/components/product-card";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,7 @@ export default function HomePage() {
       imagePath: imageFor(d.ean),
     };
   });
-  const pharmacies = pharmacyRepo.allWithSettings();
+  const pharmacies = pharmacyRepo.allWithSettings().filter((p) => p.pharmacy.id !== DC_PHARMACY_ID);
 
   return (
     <div className="animate-fade-in">

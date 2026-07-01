@@ -1,6 +1,7 @@
 import { sqliteTable, text, integer, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { timestamps } from "./_shared";
 import { pharmacies } from "./pharmacies";
+import { CATEGORIES } from "@/lib/constants";
 
 // EAN uniquely identifies a medicine. Each pharmacy maintains its own inventory
 // row for a given EAN, enabling the marketplace search to list availability
@@ -18,6 +19,7 @@ export const products = sqliteTable(
     precoCents: integer("preco_cents").notNull(),
     quantidade: integer("quantidade").notNull().default(0),
     imagePath: text("image_path").notNull().default(""),
+    category: text("category", { enum: CATEGORIES.map((c) => c.slug) as [string, ...string[]] }).notNull().default("respiratorio"),
     ...timestamps,
   },
   (t) => [uniqueIndex("products_pharmacy_ean_unique").on(t.pharmacyId, t.ean)]

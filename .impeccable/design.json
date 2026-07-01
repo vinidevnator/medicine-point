@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-01T14:52:00Z",
+  "title": "Design System: Medicine Point",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Institutional Pink",
+        "canonical": "oklch(60% 0.24 355)",
+        "tonalRamp": ["#4A0A28", "#7A0F41", "#AB1359", "#C81060", "#E0156D", "#F51C79", "#F8579C", "#FBE3EE"]
+      },
+      "secondary-purple": {
+        "role": "secondary",
+        "displayName": "Deep Plum Purple",
+        "canonical": "oklch(35% 0.13 315)",
+        "tonalRamp": ["#170D21", "#2C1740", "#412260", "#5A2D82", "#7745A6", "#9868C0", "#BC98D6", "#E3D4EE"]
+      },
+      "tertiary-blue": {
+        "role": "tertiary",
+        "displayName": "Sky Blue",
+        "canonical": "oklch(66% 0.13 228)",
+        "tonalRamp": ["#012636", "#023A50", "#025270", "#036E93", "#0489B9", "#00A3E0", "#5CC4EC", "#BCE7F7"]
+      },
+      "soft-pink": {
+        "role": "neutral",
+        "displayName": "Soft Pink",
+        "canonical": "oklch(93% 0.03 355)",
+        "tonalRamp": ["#F51C79", "#F8579C", "#FA84B8", "#FCA9CE", "#FDC4DE", "#FBE3EE", "#FDF1F6", "#FFFFFF"]
+      },
+      "gray-900": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(23% 0.005 260)",
+        "tonalRamp": ["#0A0A0B", "#161617", "#202124", "#333333", "#555555", "#8A8A8A", "#DADADA", "#F6F6F6"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headlines only (H1)." },
+      "headline": { "displayName": "Headline", "purpose": "Major section headings (H2)." },
+      "title": { "displayName": "Title", "purpose": "Sub-section and card-group headings (H3-H4)." },
+      "body": { "displayName": "Body", "purpose": "Default paragraph and UI copy." },
+      "label": { "displayName": "Label", "purpose": "Form labels and metadata." },
+      "button": { "displayName": "Button", "purpose": "All button labels regardless of variant." }
+    },
+    "shadows": [
+      { "name": "elevation-1", "value": "0 2px 8px rgba(0,0,0,0.08)", "purpose": "Subtle lift on hover for cards and list rows." },
+      { "name": "elevation-2", "value": "0 8px 24px rgba(0,0,0,0.12)", "purpose": "Dropdowns, popovers, mega-menu panel." },
+      { "name": "elevation-3", "value": "0 12px 32px rgba(0,0,0,0.18)", "purpose": "Modals, drawers, top-level dialog layer." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "ease", "purpose": "Default 0.2s hover/transition easing." },
+      { "name": "duration-hover", "value": "200ms", "purpose": "Hover and focus state transitions." },
+      { "name": "lift-hover", "value": "translateY(-1px)", "purpose": "Subtle button lift on hover." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "0px" },
+      { "name": "sm", "value": "480px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "xxl", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main call-to-action: pill-shaped, institutional pink, used for the dominant action on any screen.",
+      "html": "<button class=\"ds-btn-primary\">Buscar medicamentos</button>",
+      "css": ".ds-btn-primary { background: #F51C79; color: #FFFFFF; padding: 16px 32px; border-radius: 999px; border: none; font-weight: 600; font-size: 16px; line-height: 24px; font-family: Inter, sans-serif; cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; } .ds-btn-primary:hover { background: #E0156D; transform: translateY(-1px); } .ds-btn-primary:active { background: #C81060; transform: translateY(0); } .ds-btn-primary:focus-visible { outline: 2px solid #22C55E; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Lower-emphasis action alongside a primary button, e.g. 'Sou Farmácia'.",
+      "html": "<button class=\"ds-btn-secondary\">Sou Farmácia</button>",
+      "css": ".ds-btn-secondary { background: #FFFFFF; color: #333333; padding: 16px 32px; border-radius: 999px; border: 1px solid #DADADA; font-weight: 600; font-size: 16px; line-height: 24px; font-family: Inter, sans-serif; cursor: pointer; transition: background 0.2s ease, border-color 0.2s ease; } .ds-btn-secondary:hover { background: #F6F6F6; border-color: #BDBDBD; } .ds-btn-secondary:focus-visible { outline: 2px solid #22C55E; outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard text field. Focus uses success green, not the brand pink, to separate 'editing' from 'action'.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Buscar medicamentos por nome ou EAN…\" />",
+      "css": ".ds-input { background: #FFFFFF; color: #202124; border: 1px solid #DADADA; border-radius: 16px; padding: 16px; font-size: 16px; font-family: Inter, sans-serif; width: 100%; transition: border-color 0.2s ease, box-shadow 0.2s ease; } .ds-input::placeholder { color: #666666; } .ds-input:focus { outline: none; border-color: #22C55E; box-shadow: 0 0 0 3px rgba(34,197,94,0.2); } .ds-input[aria-invalid='true'] { border-color: #EF4444; } .ds-input[aria-invalid='true']:focus { box-shadow: 0 0 0 3px rgba(239,68,68,0.2); }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Featured/product card: image, name, price, availability badge. Flat at rest, lifts on hover.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-media\"></div><div class=\"ds-card-body\"><h3 class=\"ds-card-title\">Medicamento Exemplo</h3><p class=\"ds-card-desc\">Descrição curta do produto disponível na farmácia mais próxima.</p><div class=\"ds-card-footer\"><span class=\"ds-card-price\">R$ 24,90</span><span class=\"ds-badge ds-badge-success\">Disponível</span></div></div></div>",
+      "css": ".ds-card { background: #FFFFFF; border: 1px solid #DADADA; border-radius: 16px; overflow: hidden; transition: box-shadow 0.2s ease, border-color 0.2s ease; font-family: Inter, sans-serif; } .ds-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-color: #F8579C; } .ds-card-media { aspect-ratio: 4/3; background: #F6F6F6; } .ds-card-body { padding: 24px; } .ds-card-title { font-size: 18px; font-weight: 600; color: #202124; margin: 0 0 8px; } .ds-card-desc { font-size: 14px; color: #666666; margin: 0 0 16px; } .ds-card-footer { display: flex; align-items: center; justify-content: space-between; } .ds-card-price { font-size: 18px; font-weight: 700; color: #F51C79; }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Semantic tinted-background pill for availability and order status; never uses brand pink.",
+      "html": "<span class=\"ds-badge ds-badge-success\">Disponível</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 500; font-family: Inter, sans-serif; } .ds-badge-success { background: rgba(34,197,94,0.12); color: #16803D; } .ds-badge-danger { background: rgba(239,68,68,0.12); color: #B91C1C; } .ds-badge-warning { background: rgba(245,158,11,0.12); color: #92400E; }"
+    },
+    {
+      "name": "Cart Badge",
+      "kind": "chip",
+      "refersTo": "badge-cart",
+      "description": "Circular pink item-count indicator on the cart icon — the one place a solid pink circle is allowed.",
+      "html": "<span class=\"ds-badge-cart\">3</span>",
+      "css": ".ds-badge-cart { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; border-radius: 999px; background: #F51C79; color: #FFFFFF; font-size: 12px; font-weight: 600; font-family: Inter, sans-serif; padding: 0 4px; }"
+    },
+    {
+      "name": "Top Navigation",
+      "kind": "nav",
+      "refersTo": "navbar",
+      "description": "Consumer storefront top bar: logo, search, links, cart. 72px tall, flat white, 1px bottom border.",
+      "html": "<header class=\"ds-navbar\"><div class=\"ds-navbar-logo\">Medicine Point</div><input class=\"ds-input ds-navbar-search\" type=\"search\" placeholder=\"Buscar medicamentos…\" /><nav class=\"ds-navbar-links\"><a href=\"#\" class=\"ds-navbar-link ds-navbar-link-active\">Home</a><a href=\"#\" class=\"ds-navbar-link\">Medicamentos</a></nav></header>",
+      "css": ".ds-navbar { display: flex; align-items: center; gap: 16px; height: 72px; padding: 0 24px; background: #FFFFFF; border-bottom: 1px solid #DADADA; font-family: Inter, sans-serif; } .ds-navbar-logo { font-weight: 700; font-size: 18px; color: #F51C79; } .ds-navbar-search { max-width: 420px; } .ds-navbar-links { display: flex; gap: 8px; margin-left: auto; } .ds-navbar-link { padding: 8px 12px; border-radius: 999px; font-size: 14px; font-weight: 500; color: #555555; text-decoration: none; transition: background 0.2s ease, color 0.2s ease; } .ds-navbar-link:hover { background: #F6F6F6; color: #202124; } .ds-navbar-link-active { color: #F51C79; font-weight: 600; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Institutional Pink",
+    "overview": "Medicine Point is a hyperlocal medicine marketplace, and this system leads with a warm, saturated institutional pink (#F51C79) rather than the sterile blues and grays of a hospital intranet — a direct answer to PRODUCT.md's anti-reference against feeling \"cold or clinical like a hospital intranet or insurance portal.\" Pink carries the calls-to-action, links, and active states; deep purple (#5A2D82) and sky blue (#00A3E0) sit underneath as branding accents; a pale pink tint (#FBE3EE) softens backgrounds without diluting the primary color's saturation. The palette is deliberately more \"modern e-commerce\" than \"healthcare portal,\" matching the brand personality PRODUCT.md calls for: trustworthy, calm, and fast, but not slow or bureaucratic.\n\nImportant note on status: this DESIGN.md documents the target visual system, translated from prior visual research (docs/design.md) into the formal token spec. It does not yet match the shipped code, which currently runs a generic blue/slate shadcn-style theme (app/globals.css). Treat this file as the spec to redesign the implementation toward, not a record of what's live today.\n\nThis is a product register: the storefront and the pharmacy dashboard share this one visual language, but each surface optimizes its own primary task — fast comparison and checkout for consumers, fast scanning and action for pharmacy operators. The system explicitly rejects: sterile clinical blues/grays and dense bureaucratic forms; a generic bootstrap-y admin-template look for the dashboard; and discount/flash-sale mechanics (countdown timers, aggressive banners, manufactured urgency) since real urgency here is health-related and manufacturing it would feel exploitative.",
+    "keyCharacteristics": [
+      "Institutional pink as the single loudest color, reserved for action and identity, never for large flat background fields.",
+      "Deep purple and sky blue as quieter branding accents, not competing calls-to-action.",
+      "Fully rounded (pill) buttons and generously rounded (16px) cards/inputs — soft geometry throughout, no sharp corners.",
+      "Nearly flat: shadows are a light touch, not a structural device.",
+      "One typeface family end to end (Inter), carrying everything from a 48px hero down to a 12px caption."
+    ],
+    "rules": [
+      { "name": "The Institutional Pink Rule", "body": "Pink is the loudest color in the system and is rationed accordingly: it appears on CTAs, links, active/selected states, and the cart badge — never as a large flat background fill, never as a decorative gradient. If pink is covering more than a button, a badge, or a thin active-state indicator, it's being overused.", "section": "colors" },
+      { "name": "The Borrowed Green Rule", "body": "Success green (#22C55E) is semantic only. It must never be treated as a secondary brand accent — it exists exclusively to say \"in stock\" / \"confirmed\" / \"done,\" carrying real information per PRODUCT.md's \"reassurance over urgency\" principle.", "section": "colors" },
+      { "name": "The One-Family Rule", "body": "Every text role — hero to caption — is Inter. Weight and size carry hierarchy; a second family is never introduced for \"flavor.\"", "section": "typography" },
+      { "name": "The Flat-at-Rest Rule", "body": "No component carries a shadow in its default state. Elevation only appears in response to interaction (hover) or as a structural signal that content is floating above the page (drawer, modal, dropdown).", "section": "elevation" }
+    ],
+    "dos": [
+      "Do ration Institutional Pink (#F51C79) to CTAs, links, active states, and the cart badge — per the Institutional Pink Rule.",
+      "Do use pill-shaped (999px) buttons and 16px-radius cards/inputs everywhere; the soft geometry is consistent across both audiences.",
+      "Do keep success green (#22C55E) strictly semantic — \"in stock now,\" \"confirmed,\" \"done\" — carrying real information per PRODUCT.md's \"reassurance over urgency\" principle, never used as decoration.",
+      "Do keep surfaces flat at rest and reserve shadows for hover feedback, dropdowns, and overlays only.",
+      "Do design for the least tech-comfortable user: generous 16px body text, obvious pink primary actions, forgiving form validation with inline messages."
+    ],
+    "donts": [
+      "Don't default to sterile blues and grays — PRODUCT.md explicitly rejects feeling \"cold or clinical like a hospital intranet or insurance portal.\" If a screen is trending toward slate-and-blue with no pink, it's drifting off-brand.",
+      "Don't ship the pharmacy dashboard as a generic bootstrap-y admin template. PRODUCT.md is explicit: \"no default component library look, no point of view.\"",
+      "Don't introduce countdown timers, aggressive banners, or urgency-manufacturing patterns anywhere in the storefront. PRODUCT.md: \"real urgency here is health-related, and manufactured urgency would feel exploitative.\"",
+      "Don't use primary pink as a focus-ring color on form fields — focus is green, action is pink; conflating the two undoes the Borrowed Green Rule.",
+      "Don't use border-left/border-right stripes as a colored accent on cards or alerts, gradient text, or glassmorphism-as-decoration — none of these appear anywhere in this system.",
+      "Don't let the primary pink cover large flat background areas; it stays confined to controls and indicators, not page-level fields (that's what Soft Pink #FBE3EE is for)."
+    ]
+  }
+}

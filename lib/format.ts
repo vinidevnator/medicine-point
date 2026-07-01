@@ -42,6 +42,13 @@ export function formatDate(unixSeconds: number | null | undefined): string {
   });
 }
 
+/** Parses a `YYYY-MM-DD` (native `<input type="date">`) value into a unix-seconds timestamp, or `null` if invalid. */
+export function parseDateInputToUnix(value: string): number | null {
+  const ms = Date.parse(value);
+  if (!Number.isFinite(ms)) return null;
+  return Math.floor(ms / 1000);
+}
+
 export function tempoLabel(min: number): string {
   if (min < 60) return `${min} min`;
   const h = Math.floor(min / 60);

@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChartCard, LineChartCard, PieChartCard } from "@/components/charts";
 import { ReportFilters } from "@/components/dashboard/report-filters";
-import { formatBRL } from "@/lib/format";
+import { formatBRL, parseDateInputToUnix } from "@/lib/format";
 
 type SearchParams = Promise<{ f?: string; from?: string; to?: string }>;
 
@@ -12,7 +12,9 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: S
   const session = await requirePharmacy();
   const { f, from, to } = await searchParams;
   const filter = (f as ReportFilter | undefined) ?? "7d";
-  const custom = from && to ? { from: Number(from), to: Number(to) } : undefined;
+  const fromTs = from ? parseDateInputToUnix(from) : null;
+  const toTs = to ? parseDateInputToUnix(to) : null;
+  const custom = fromTs !== null && toTs !== null ? { from: fromTs, to: toTs + 86399 } : undefined;
   const okFilters: ReportFilter[] = ["hoje", "ontem", "7d", "30d", "custom"];
   const safeFilter = okFilters.includes(filter as ReportFilter) ? filter : "7d";
   const report = reportService.build(session.pharmacyId, safeFilter, custom);

@@ -5,7 +5,7 @@ import { ProductForm } from "@/components/dashboard/product-form";
 
 type Initial = {
   id?: string; ean?: string; nome?: string; descricao?: string;
-  precoCents?: number; quantidade?: number; imagePath?: string;
+  precoCents?: number; quantidade?: number; imagePath?: string; category?: string;
 };
 
 export function ProductFormDialog({ mode, initial, trigger }: {

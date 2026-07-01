@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/field";
 import { maskEAN } from "@/lib/masks";
+import { CATEGORIES } from "@/lib/constants";
 import { createProductAction, updateProductAction, type ProductState } from "@/actions/products";
 
 type Mode = "create" | "edit";
@@ -15,6 +16,7 @@ type Initial = {
   precoCents?: number;
   quantidade?: number;
   imagePath?: string;
+  category?: string;
 };
 
 export function ProductForm({ mode, initial }: { mode: Mode; initial?: Initial }) {
@@ -47,6 +49,21 @@ export function ProductForm({ mode, initial }: { mode: Mode; initial?: Initial }
           className="w-full rounded-lg border border-input bg-card p-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/40"
           aria-invalid={!!state.fieldErrors?.descricao}
         />
+      </Field>
+      <Field label="Categoria" htmlFor="category" error={state.fieldErrors?.category}>
+        <select
+          id="category"
+          name="category"
+          required
+          defaultValue={initial?.category ?? ""}
+          className="w-full rounded-lg border border-input bg-card p-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/40"
+          aria-invalid={!!state.fieldErrors?.category}
+        >
+          <option value="" disabled>Selecione uma categoria</option>
+          {CATEGORIES.map((c) => (
+            <option key={c.slug} value={c.slug}>{c.label}</option>
+          ))}
+        </select>
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Preço (R$)" htmlFor="preco" error={state.fieldErrors?.preco} hint="Ex.: 39,90">

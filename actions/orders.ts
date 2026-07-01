@@ -41,10 +41,10 @@ export async function buyNowAction(
 }
 
 export async function advanceOrderAction(formData: FormData): Promise<void> {
-  await requirePharmacy();
+  const session = await requirePharmacy();
   const orderId = String(formData.get("id") ?? "");
   if (!orderId) return;
-  orderService.advance(orderId);
+  orderService.advance(orderId, session.pharmacyId);
   revalidatePath("/dashboard/pedidos");
   revalidatePath(`/pedido/${orderId}`);
 }

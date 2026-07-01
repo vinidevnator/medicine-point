@@ -19,25 +19,33 @@ export default async function BuscaPage({ searchParams }: { searchParams: Search
     );
   }
   if (category) {
-    const catLabel = CATEGORIES.find((c) => c.slug === category)?.label.toLowerCase();
-    if (catLabel) list = list.filter((p) => p.nome.toLowerCase().includes(catLabel.split(" ")[0]));
+    list = list.filter((p) => p.category === category);
   }
 
   const products = list.map((d) => {
-    const row = productRepo.getByEanGlobal(d.ean)[0];
+    const rows = productRepo.getByEanGlobal(d.ean);
+    const lowestPrice = rows.length > 0 ? Math.min(...rows.map((r) => r.precoCents)) : 0;
+    const totalStock = rows.reduce((sum, r) => sum + r.quantidade, 0);
     return {
       ean: d.ean,
       nome: d.nome,
       descricao: d.descricao,
-      precoCents: row?.precoCents ?? 0,
+      precoCents: lowestPrice,
       imagePath: imageFor(d.ean),
+      quantidade: totalStock,
     };
   });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 animate-fade-in">
       <h1 className="text-2xl font-bold">
-        {query ? `Resultados para “${q}”` : category ? CATEGORIES.find((c) => c.slug === category)?.label : "Todos os medicamentos"}
+        {query && category
+          ? `Resultados para “${q}” em ${CATEGORIES.find((c) => c.slug === category)?.label}`
+          : query
+            ? `Resultados para “${q}”`
+            : category
+              ? CATEGORIES.find((c) => c.slug === category)?.label
+              : "Todos os medicamentos"}
       </h1>
       <p className="mt-1 text-sm text-muted-foreground">{products.length} produto(s) encontrado(s)</p>
 

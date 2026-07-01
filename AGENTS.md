@@ -45,3 +45,8 @@ PostCSS config is in `postcss.config.mjs` using `@tailwindcss/postcss`.
 ## Docs source of truth
 
 For any Next.js API, convention, or migration question, read the version-matched docs bundled in `node_modules/next/dist/docs/` (App Router lives under `01-app/`). Public site docs may reflect a different version.
+
+## Design Context
+
+- **`PRODUCT.md`** (project root): register, users, product purpose, brand personality, anti-references, design principles, accessibility. Read this before any UI/UX work.
+- **`docs/design.md`**: visual system reference (colors, typography, spacing, components). Note: it was reverse-engineered from an external reference brand and does not yet match the colors actually implemented in `app/globals.css`; treat it as a starting reference, not ground truth, until reconciled (see `/impeccable document`).
