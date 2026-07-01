@@ -1,6 +1,7 @@
 "use client";
-import Link from "next/link";
-import { cn } from "@/lib/cn";
+import { Chip } from "@/components/ui/chip";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const OPTIONS: Array<{ value: "hoje" | "ontem" | "7d" | "30d" | "custom"; label: string }> = [
   { value: "hoje", label: "Hoje" },
@@ -12,33 +13,26 @@ const OPTIONS: Array<{ value: "hoje" | "ontem" | "7d" | "30d" | "custom"; label:
 
 export function ReportFilters({ current }: { current: "hoje" | "ontem" | "7d" | "30d" | "custom" }) {
   return (
-    <div className="flex flex-col gap-2 md:flex-row md:items-center">
-      <div className="flex flex-wrap gap-1">
+    <div className="flex flex-col gap-3 md:flex-row md:items-center">
+      <div className="flex flex-wrap gap-2">
         {OPTIONS.map((o) => (
-          <Link
-            key={o.value}
-            href={`/dashboard/relatorios?f=${o.value}`}
-            className={cn(
-              "rounded-full border px-3 py-1.5 text-sm transition",
-              current === o.value ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-muted"
-            )}
-          >
+          <Chip key={o.value} href={`/dashboard/relatorios?f=${o.value}`} active={current === o.value}>
             {o.label}
-          </Link>
+          </Chip>
         ))}
       </div>
       {current === "custom" && (
         <form action="/dashboard/relatorios" method="GET" className="flex flex-wrap items-end gap-2">
           <input type="hidden" name="f" value="custom" />
-          <label className="text-xs text-muted-foreground">De
-            <input type="date" name="from" className="mt-1 block h-9 rounded-lg border border-input bg-card px-2 text-sm" />
+          <label className="text-caption text-muted-foreground">
+            De
+            <Input type="date" name="from" className="mt-1 h-10" />
           </label>
-          <label className="text-xs text-muted-foreground">Até
-            <input type="date" name="to" className="mt-1 block h-9 rounded-lg border border-input bg-card px-2 text-sm" />
+          <label className="text-caption text-muted-foreground">
+            Até
+            <Input type="date" name="to" className="mt-1 h-10" />
           </label>
-          <button type="submit" className="h-9 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90">
-            Aplicar
-          </button>
+          <Button type="submit" size="sm">Aplicar</Button>
         </form>
       )}
     </div>

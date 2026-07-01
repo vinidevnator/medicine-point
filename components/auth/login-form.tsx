@@ -1,6 +1,7 @@
 "use client";
 import { useActionState } from "react";
 import Link from "next/link";
+import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/field";
@@ -12,7 +13,9 @@ export function LoginForm() {
   return (
     <form action={action} className="space-y-4">
       {state.error && !state.fieldErrors && (
-        <p className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger" role="alert">{state.error}</p>
+        <p className="flex items-center gap-2 rounded-lg bg-danger/10 px-3.5 py-2.5 text-body-sm text-danger" role="alert">
+          <AlertCircle className="size-4 shrink-0" aria-hidden /> {state.error}
+        </p>
       )}
       <Field label="E-mail" htmlFor="email" error={state.fieldErrors?.email}>
         <Input id="email" name="email" type="email" autoComplete="email" required invalid={!!state.fieldErrors?.email} />
@@ -20,13 +23,13 @@ export function LoginForm() {
       <Field label="Senha" htmlFor="senha" error={state.fieldErrors?.senha}>
         <Input id="senha" name="senha" type="password" autoComplete="current-password" required invalid={!!state.fieldErrors?.senha} />
       </Field>
-      <Button type="submit" className="w-full" disabled={pending}>
+      <Button type="submit" size="lg" className="w-full" loading={pending}>
         {pending ? "Entrando…" : "Entrar"}
       </Button>
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-body-sm text-muted-foreground">
         Não tem conta? <Link href="/cadastrar" className="font-medium text-primary hover:underline">Cadastrar farmácia</Link>
       </p>
-      <p className="rounded-lg bg-muted px-3 py-2 text-center text-xs text-muted-foreground">
+      <p className="rounded-lg bg-muted px-3.5 py-2.5 text-center text-caption text-muted-foreground">
         Demo: <strong>demo@medicinepoint.com.br</strong> / <strong>demo12345</strong>
       </p>
     </form>

@@ -1,7 +1,8 @@
+import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { formatDateTime } from "@/lib/format";
 
-type Step = { label: string; description: string; icon: string; at: number | null };
+type Step = { label: string; description: string; icon: React.ComponentType<{ className?: string }>; at: number | null };
 
 export function Stepper({ steps, currentIndex }: { steps: Step[]; currentIndex: number }) {
   return (
@@ -9,6 +10,7 @@ export function Stepper({ steps, currentIndex }: { steps: Step[]; currentIndex: 
       {steps.map((step, i) => {
         const done = i < currentIndex;
         const active = i === currentIndex;
+        const Icon = step.icon;
         return (
           <li
             key={step.label}
@@ -20,28 +22,28 @@ export function Stepper({ steps, currentIndex }: { steps: Step[]; currentIndex: 
             <div className="flex items-center gap-3 md:flex-col md:gap-2">
               <span
                 className={cn(
-                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 text-lg transition-colors",
+                  "flex size-10 shrink-0 items-center justify-center rounded-pill border-2 transition-colors duration-150",
                   done && "border-success bg-success/10 text-success",
                   active && "border-primary bg-primary text-primary-foreground",
                   !done && !active && "border-border bg-muted text-muted-foreground"
                 )}
                 aria-current={active ? "step" : undefined}
               >
-                {done ? "✓" : step.icon}
+                {done ? <Check className="size-5" aria-hidden /> : <Icon className="size-5" aria-hidden />}
               </span>
               {i < steps.length - 1 && (
                 <span
                   className={cn(
-                    "hidden md:block absolute left-[calc(50%+1.5rem)] top-5 h-0.5 w-[calc(100%-3rem)] -translate-x-1/2 rounded-full",
+                    "hidden md:block absolute left-[calc(50%+1.5rem)] top-5 h-0.5 w-[calc(100%-3rem)] rounded-pill",
                     done ? "bg-success" : "bg-border"
                   )}
                 />
               )}
             </div>
             <div className="min-w-0">
-              <p className={cn("font-medium", active && "text-primary")}>{step.label}</p>
-              <p className="text-sm text-muted-foreground">{step.description}</p>
-              <p className="text-xs text-muted-foreground">{formatDateTime(step.at)}</p>
+              <p className={cn("text-body font-medium", active && "text-primary")}>{step.label}</p>
+              <p className="text-body-sm text-muted-foreground">{step.description}</p>
+              <p className="text-caption text-muted-foreground">{formatDateTime(step.at)}</p>
             </div>
           </li>
         );

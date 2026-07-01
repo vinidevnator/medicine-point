@@ -1,20 +1,26 @@
 import Link from "next/link";
+import { Store, Motorbike, Truck, ArrowRight } from "lucide-react";
 import { CATEGORIES, DC_PHARMACY_ID } from "@/lib/constants";
+import { categoryIcon } from "@/lib/category-icons";
 import { productRepo, pharmacyRepo } from "@/repositories";
 import { ProductCard } from "@/components/product-card";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function HomePage() {
   const distinct = productRepo.listDistinctEans();
   const featured = distinct.slice(0, 6).map((d) => {
-    const row = productRepo.getByEanGlobal(d.ean)[0];
+    const rows = productRepo.getByEanGlobal(d.ean);
+    const lowestPrice = rows.length > 0 ? Math.min(...rows.map((r) => r.precoCents)) : 0;
+    const totalStock = rows.reduce((sum, r) => sum + r.quantidade, 0);
     return {
       ean: d.ean,
       nome: d.nome,
       descricao: d.descricao,
-      precoCents: row?.precoCents ?? 0,
+      precoCents: lowestPrice,
       imagePath: imageFor(d.ean),
+      quantidade: totalStock,
     };
   });
   const pharmacies = pharmacyRepo.allWithSettings().filter((p) => p.pharmacy.id !== DC_PHARMACY_ID);
@@ -22,39 +28,35 @@ export default function HomePage() {
   return (
     <div className="animate-fade-in">
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-primary/10 via-card to-accent/10">
-        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-16 md:grid-cols-2 md:py-24">
+      <section className="border-b border-border bg-soft-pink">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 md:grid-cols-2 md:px-6 md:py-24">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-              📍 Retire na loja · 🏍️ Motoentrega · 🚚 Centro de distribuição
-            </span>
-            <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-body-sm font-medium text-primary-pressed">
+              <span className="inline-flex items-center gap-1.5"><Store className="size-4" aria-hidden /> Retirada</span>
+              <span className="inline-flex items-center gap-1.5"><Motorbike className="size-4" aria-hidden /> Motoentrega</span>
+              <span className="inline-flex items-center gap-1.5"><Truck className="size-4" aria-hidden /> Centro de distribuição</span>
+            </div>
+            <h1 className="mt-4 text-display font-bold tracking-tight text-balance">
               Medicamentos perto de você, com um <span className="text-primary">CEP</span>.
             </h1>
-            <p className="mt-4 max-w-md text-lg text-muted-foreground">
+            <p className="mt-4 max-w-md text-body text-muted-foreground">
               Compare preços em farmácias próximas, escolha a retirada ou a entrega mais rápida e finalize em segundos.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/busca"><Button size="lg">Buscar medicamentos</Button></Link>
-              <Link href="/cadastrar"><Button size="lg" variant="outline">Cadastrar minha farmácia</Button></Link>
+              <Link href="/cadastrar"><Button size="lg" variant="secondary">Cadastrar minha farmácia</Button></Link>
             </div>
           </div>
-          <form action="/busca" className="w-full" role="search">
-            <Card className="p-6 shadow-lg">
-              <label htmlFor="q" className="mb-2 block text-sm font-medium">
+          <form action="/busca" role="search">
+            <Card className="shadow-popover">
+              <label htmlFor="q" className="mb-2 block text-label text-foreground">
                 Busque por nome ou EAN
               </label>
-              <input
-                id="q"
-                name="q"
-                type="search"
-                placeholder="Ex.: Medicamento de Febre"
-                className="h-12 w-full rounded-lg border border-input bg-background px-3 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/40"
-              />
-              <button type="submit" className="mt-4 h-12 w-full rounded-lg bg-primary px-5 font-medium text-primary-foreground transition hover:opacity-90">
+              <Input id="q" name="q" type="search" placeholder="Ex.: Medicamento de Febre" className="h-14 text-body" />
+              <Button type="submit" size="lg" className="mt-4 w-full">
                 Buscar disponibilidade
-              </button>
-              <p className="mt-3 text-center text-xs text-muted-foreground">
+              </Button>
+              <p className="mt-4 text-center text-caption text-muted-foreground">
                 {pharmacies.length} farmácia(s) ativa(s) na plataforma
               </p>
             </Card>
@@ -63,28 +65,33 @@ export default function HomePage() {
       </section>
 
       {/* Categorias */}
-      <section className="mx-auto max-w-7xl px-4 py-12">
-        <h2 className="mb-6 text-2xl font-bold">Categorias</h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/busca?cat=${cat.slug}`}
-              className="group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-5 text-center transition hover:border-primary/40 hover:shadow-sm"
-            >
-              <span className="text-3xl" aria-hidden>{cat.icon}</span>
-              <span className="text-sm font-medium">{cat.label}</span>
-            </Link>
-          ))}
+      <section className="mx-auto max-w-7xl px-4 py-14 md:px-6">
+        <h2 className="mb-6 text-[28px] font-bold">Categorias</h2>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
+          {CATEGORIES.map((cat) => {
+            const Icon = categoryIcon(cat.slug);
+            return (
+              <Link
+                key={cat.slug}
+                href={`/busca?cat=${cat.slug}`}
+                className="group flex flex-col items-center gap-3 rounded-lg border border-border bg-card p-5 text-center transition-colors duration-150 hover:border-primary/40 hover:bg-soft-pink"
+              >
+                <span className="inline-flex size-11 items-center justify-center rounded-pill bg-soft-pink text-primary transition-colors duration-150 group-hover:bg-primary group-hover:text-primary-foreground">
+                  <Icon className="size-5" aria-hidden />
+                </span>
+                <span className="text-body-sm font-medium">{cat.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
       {/* Produtos em destaque */}
-      <section className="mx-auto max-w-7xl px-4 py-8">
+      <section className="mx-auto max-w-7xl px-4 py-8 md:px-6">
         <div className="mb-6 flex items-end justify-between">
-          <h2 className="text-2xl font-bold">Produtos em destaque</h2>
-          <Link href="/busca" className="text-sm font-medium text-primary hover:underline">
-            Ver todos →
+          <h2 className="text-[28px] font-bold">Produtos em destaque</h2>
+          <Link href="/busca" className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline">
+            Ver todos <ArrowRight className="size-4" aria-hidden />
           </Link>
         </div>
         {featured.length === 0 ? (
@@ -101,14 +108,14 @@ export default function HomePage() {
       </section>
 
       {/* Farmácias próximas CTA */}
-      <section className="border-t border-border bg-muted/30">
-        <div className="mx-auto max-w-7xl px-4 py-12">
-          <div className="rounded-2xl bg-gradient-to-r from-primary to-secondary p-8 text-primary-foreground md:p-12">
-            <h2 className="text-2xl font-bold md:text-3xl">Tem uma farmácia?</h2>
-            <p className="mt-2 max-w-lg opacity-90">
+      <section className="border-t border-border bg-muted">
+        <div className="mx-auto max-w-7xl px-4 py-14 md:px-6">
+          <div className="rounded-xl bg-primary p-8 text-primary-foreground md:p-12">
+            <h2 className="text-[26px] font-bold md:text-[32px]">Tem uma farmácia?</h2>
+            <p className="mt-2 max-w-lg text-body opacity-90">
               Cadastre-se, configure seu raio de atendimento e comece a atender pedidos locais usando seu próprio estoque.
             </p>
-            <Link href="/cadastrar" className="mt-4 inline-block">
+            <Link href="/cadastrar" className="mt-5 inline-block">
               <Button variant="secondary" size="lg">Quero vender</Button>
             </Link>
           </div>

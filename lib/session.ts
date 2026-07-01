@@ -3,7 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { env } from "./env";
 
-const SESSION_COOKIE = "mp_session";
+export const SESSION_COOKIE = "mp_session";
 const ALG = "HS256";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 

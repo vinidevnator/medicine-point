@@ -43,7 +43,7 @@ export const searchService = {
       if (distance > row.settings.raioKm) continue;
 
       const tipos: Array<"retirada" | "moto" | "distribuicao"> = [];
-      let tempo: number = DELIVERY_TIPOS.distribuicao.tempoMin;
+      let tempo = Infinity;
       let frete = 0;
 
       if (row.settings.aceitaRetirada) {
@@ -59,7 +59,7 @@ export const searchService = {
         tempo = Math.min(tempo, motoTempo);
         frete = row.settings.freteMotoCents;
       }
-      tipos.push("distribuicao");
+      if (tipos.length === 0) continue;
 
       offerings.push({
         pharmacyId: p.pharmacyId,

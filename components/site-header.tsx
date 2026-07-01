@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, Search } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Logo } from "@/components/logo";
 import { Drawer } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +20,7 @@ const navLinks = [
 
 export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
 
@@ -28,52 +31,69 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4">
+    <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/75">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center gap-4 px-4 md:px-6">
         <button
-          className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-border md:hidden"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
         >
-          ☰
+          <Menu className="size-5" aria-hidden />
         </button>
-        <Link href="/" className="flex items-center gap-2 font-bold text-lg text-primary">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">+</span>
-          Medicine Point
+
+        <Link href="/" className="shrink-0">
+          <Logo />
         </Link>
 
+        <nav className="hidden items-center gap-1 lg:flex">
+          {navLinks.map((l) => {
+            const linkPath = l.href.split("?")[0];
+            const active = !l.href.includes("?") && pathname === linkPath;
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={cn(
+                  "rounded-lg px-3 py-2 text-body-sm font-medium transition-colors duration-150",
+                  active ? "text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {l.label}
+              </Link>
+            );
+          })}
+        </nav>
+
         {showSearch && (
-          <form onSubmit={submitSearch} className="hidden flex-1 max-w-xl mx-4 md:flex">
-            <Input
-              type="search"
-              placeholder="Buscar medicamentos por nome ou EAN…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Buscar medicamentos"
-            />
-            <Button type="submit" className="ml-2">Buscar</Button>
+          <form onSubmit={submitSearch} className="hidden max-w-md flex-1 md:flex" role="search">
+            <div className="relative w-full">
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+              <Input
+                type="search"
+                placeholder="Buscar por nome ou EAN…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Buscar medicamentos"
+                className="pl-11"
+              />
+            </div>
           </form>
         )}
 
-        <nav className="ml-auto hidden items-center gap-1 md:flex">
-          {navLinks.slice(0, 2).map((l) => (
-            <Link key={l.href} href={l.href} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
-              {l.label}
-            </Link>
-          ))}
-          <ThemeToggle className="ml-1" />
+        <div className="ml-auto hidden items-center gap-2 md:flex">
+          <ThemeToggle />
           <Link href="/entrar">
-            <Button variant="outline" size="sm">Sou Farmácia</Button>
+            <Button variant="secondary" size="sm">Sou Farmácia</Button>
           </Link>
           <Link href="/cadastrar">
             <Button size="sm">Cadastrar</Button>
           </Link>
-        </nav>
+        </div>
 
         <div className="ml-auto flex items-center gap-2 md:hidden">
           <ThemeToggle />
           <Link href="/entrar">
-            <Button size="sm" variant="outline">Entrar</Button>
+            <Button size="sm" variant="secondary">Entrar</Button>
           </Link>
         </div>
       </div>
@@ -87,32 +107,35 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
               setOpen(false);
               router.push(q ? `/busca?q=${encodeURIComponent(q)}` : "/busca");
             }}
-            className="mb-4 flex gap-2"
+            className="mb-4"
           >
-            <Input
-              type="search"
-              placeholder="Buscar medicamentos…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              aria-label="Buscar medicamentos"
-            />
-            <Button type="submit">Buscar</Button>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+              <Input
+                type="search"
+                placeholder="Buscar medicamentos…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Buscar medicamentos"
+                className="pl-11"
+              />
+            </div>
           </form>
         )}
-        <ul className="flex flex-col">
+        <ul className="flex flex-col gap-0.5">
           {navLinks.map((l) => (
             <li key={l.href}>
               <Link
                 href={l.href}
                 onClick={() => setOpen(false)}
-                className={cn("block rounded-md px-3 py-2.5 text-sm font-medium hover:bg-muted")}
+                className="block rounded-lg px-3 py-3 text-body font-medium hover:bg-muted"
               >
                 {l.label}
               </Link>
             </li>
           ))}
           <li className="mt-2 border-t border-border pt-2">
-            <Link href="/cadastrar" onClick={() => setOpen(false)} className="block rounded-md px-3 py-2.5 text-sm font-medium text-primary hover:bg-muted">
+            <Link href="/cadastrar" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-body font-medium text-primary hover:bg-muted">
               Cadastrar farmácia
             </Link>
           </li>

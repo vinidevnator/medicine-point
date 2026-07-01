@@ -1,30 +1,58 @@
 import { z } from "zod";
 import { parseBRLToCents } from "@/lib/format";
 import { onlyDigits } from "@/lib/masks";
-import { CATEGORIES } from "@/lib/constants";
+import { CATEGORIES, ESTADOS_BR, FATURAMENTO_OPCOES } from "@/lib/constants";
 
 const cnpjRegex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
 const cepRegex = /^\d{5}-\d{3}$/;
 const eanRegex = /^\d{13}$/;
 
+function isValidCNPJ(value: string): boolean {
+  const digits = onlyDigits(value);
+  if (digits.length !== 14) return false;
+  if (/^(\d)\1{13}$/.test(digits)) return false;
+
+  const calcCheckDigit = (base: string, weights: number[]): number => {
+    const sum = base
+      .split("")
+      .reduce((acc, digit, i) => acc + Number(digit) * weights[i], 0);
+    const remainder = sum % 11;
+    return remainder < 2 ? 0 : 11 - remainder;
+  };
+
+  const base = digits.slice(0, 12);
+  const digit1 = calcCheckDigit(base, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  const digit2 = calcCheckDigit(base + digit1, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  return digits === `${base}${digit1}${digit2}`;
+}
+
 export const registerSchema = z.object({
-  cnpj: z.string().regex(cnpjRegex, { error: "CNPJ inválido" }),
-  razaoSocial: z.string().min(3, { error: "Informe a razão social" }),
-  nomeFantasia: z.string().min(2, { error: "Informe o nome fantasia" }),
+  cnpj: z
+    .string()
+    .regex(cnpjRegex, { error: "CNPJ inválido" })
+    .refine(isValidCNPJ, { error: "CNPJ inválido" }),
+  razaoSocial: z.string().trim().min(3, { error: "Informe a razão social" }),
+  nomeFantasia: z.string().trim().min(2, { error: "Informe o nome fantasia" }),
   email: z.email({ error: "E-mail inválido" }),
   senha: z
     .string()
     .min(8, { error: "A senha deve ter no mínimo 8 caracteres" }),
   cep: z.string().regex(cepRegex, { error: "CEP inválido" }),
-  logradouro: z.string().min(3, { error: "Endereço obrigatório" }),
-  numero: z.string().min(1, { error: "Número obrigatório" }),
+  logradouro: z.string().trim().min(3, { error: "Endereço obrigatório" }),
+  numero: z.string().trim().min(1, { error: "Número obrigatório" }),
   complemento: z.string().optional().default(""),
-  bairro: z.string().min(2, { error: "Bairro obrigatório" }),
-  cidade: z.string().min(2, { error: "Cidade obrigatória" }),
-  estado: z.string().length(2, { error: "UF inválida" }),
-  faturamento: z.enum(["ate_50k", "50k_200k", "200k_500k", "acima_500k"], {
-    error: "Selecione o faturamento",
+  bairro: z.string().trim().min(2, { error: "Bairro obrigatório" }),
+  cidade: z.string().trim().min(2, { error: "Cidade obrigatória" }),
+  estado: z.enum(ESTADOS_BR.map((e) => e.value) as [string, ...string[]], {
+    error: "Selecione um estado válido",
   }),
+  faturamento: z.enum(
+    FATURAMENTO_OPCOES.map((o) => o.value) as [
+      (typeof FATURAMENTO_OPCOES)[number]["value"],
+      ...(typeof FATURAMENTO_OPCOES)[number]["value"][],
+    ],
+    { error: "Selecione o faturamento" }
+  ),
 });
 
 export const loginSchema = z.object({

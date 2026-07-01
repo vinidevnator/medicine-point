@@ -19,7 +19,7 @@ export function BarChartCard({
         <XAxis dataKey={xKey} tick={axisStyle} tickLine={false} />
         <YAxis tick={axisStyle} tickLine={false} axisLine={false} />
         <Tooltip
-          contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }}
+          contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--foreground)", fontSize: 13 }}
           labelStyle={{ color: "var(--muted-foreground)" }}
         />
         <Bar dataKey={dataKey} fill={COLORS[0]} radius={[6, 6, 0, 0]} name={label} />
@@ -38,10 +38,10 @@ export function LineChartCard({
         <XAxis dataKey={xKey} tick={axisStyle} tickLine={false} />
         <YAxis tick={axisStyle} tickLine={false} axisLine={false} />
         <Tooltip
-          contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }}
+          contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--foreground)", fontSize: 13 }}
           labelStyle={{ color: "var(--muted-foreground)" }}
         />
-        <Line type="monotone" dataKey={dataKey} stroke={COLORS[1]} strokeWidth={2.5} dot={{ r: 3 }} name={label} />
+        <Line type="monotone" dataKey={dataKey} stroke={COLORS[0]} strokeWidth={2.5} dot={{ r: 3 }} name={label} />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -54,7 +54,7 @@ export function PieChartCard({
     <ResponsiveContainer width="100%" height={height}>
       <PieChart>
         <Tooltip
-          contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }}
+          contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--foreground)", fontSize: 13 }}
         />
         <Pie data={data} dataKey={dataKey} nameKey={nameKey} innerRadius={50} outerRadius={90} paddingAngle={2}>
           {data.map((_, i) => (

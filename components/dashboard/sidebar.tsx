@@ -2,17 +2,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LayoutDashboard, Pill, Package, TrendingUp, Settings, User, LogOut, Menu } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Drawer } from "@/components/ui/drawer";
+import { Logo } from "@/components/logo";
 import { logoutAction } from "@/actions/auth";
 
 const items = [
-  { href: "/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/dashboard/produtos", label: "Produtos", icon: "💊" },
-  { href: "/dashboard/pedidos", label: "Pedidos", icon: "📦" },
-  { href: "/dashboard/relatorios", label: "Relatórios", icon: "📈" },
-  { href: "/dashboard/configuracoes", label: "Configurações", icon: "⚙️" },
-  { href: "/dashboard/conta", label: "Minha Conta", icon: "👤" },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/produtos", label: "Produtos", icon: Pill },
+  { href: "/dashboard/pedidos", label: "Pedidos", icon: Package },
+  { href: "/dashboard/relatorios", label: "Relatórios", icon: TrendingUp },
+  { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
+  { href: "/dashboard/conta", label: "Minha Conta", icon: User },
 ];
 
 export function DashboardSidebar() {
@@ -21,27 +23,28 @@ export function DashboardSidebar() {
   const close = () => setOpen(false);
 
   const Nav = (
-    <nav className="flex flex-col gap-1 p-3">
+    <nav className="flex h-full flex-col gap-1 p-3">
       {items.map((it) => {
         const active = pathname === it.href || (it.href !== "/dashboard" && pathname.startsWith(it.href));
+        const Icon = it.icon;
         return (
           <Link
             key={it.href}
             href={it.href}
             onClick={close}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition",
+              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-body-sm font-medium transition-colors duration-150",
               active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
-            <span aria-hidden>{it.icon}</span>
+            <Icon className="size-[18px] shrink-0" aria-hidden />
             {it.label}
           </Link>
         );
       })}
       <form action={logoutAction} className="mt-auto pt-3">
-        <button type="submit" className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-danger/10 hover:text-danger">
-          <span aria-hidden>🚪</span> Sair
+        <button type="submit" className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-body-sm font-medium text-muted-foreground transition-colors duration-150 hover:bg-danger/10 hover:text-danger">
+          <LogOut className="size-[18px] shrink-0" aria-hidden /> Sair
         </button>
       </form>
     </nav>
@@ -50,17 +53,18 @@ export function DashboardSidebar() {
   return (
     <>
       <div className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
-        <div className="flex h-16 items-center gap-2 border-b border-border px-5 font-bold text-primary">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">+</span>
-          Medicine Point
+        <div className="flex h-16 items-center border-b border-border px-5">
+          <Logo />
         </div>
         {Nav}
       </div>
 
       <div className="md:hidden">
-        <div className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-card px-4">
-          <button onClick={() => setOpen(true)} className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border" aria-label="Abrir menu">☰</button>
-          <Link href="/dashboard" className="font-bold text-primary">Medicine Point</Link>
+        <div className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-card px-4">
+          <button onClick={() => setOpen(true)} className="inline-flex size-10 items-center justify-center rounded-lg border border-border" aria-label="Abrir menu">
+            <Menu className="size-5" aria-hidden />
+          </button>
+          <Link href="/dashboard"><Logo /></Link>
           <span className="w-10" />
         </div>
       </div>

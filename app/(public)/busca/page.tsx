@@ -1,8 +1,9 @@
-import Link from "next/link";
 import { CATEGORIES } from "@/lib/constants";
+import { categoryIcon } from "@/lib/category-icons";
 import { productRepo } from "@/repositories";
 import { ProductCard } from "@/components/product-card";
 import { Card } from "@/components/ui/card";
+import { Chip } from "@/components/ui/chip";
 
 type SearchParams = Promise<{ q?: string; cat?: string }>;
 
@@ -37,29 +38,28 @@ export default async function BuscaPage({ searchParams }: { searchParams: Search
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 animate-fade-in">
-      <h1 className="text-2xl font-bold">
+    <div className="mx-auto max-w-7xl px-4 py-10 md:px-6 animate-fade-in">
+      <h1 className="text-[28px] font-bold text-balance">
         {query && category
-          ? `Resultados para “${q}” em ${CATEGORIES.find((c) => c.slug === category)?.label}`
+          ? `Resultados para "${q}" em ${CATEGORIES.find((c) => c.slug === category)?.label}`
           : query
-            ? `Resultados para “${q}”`
+            ? `Resultados para "${q}"`
             : category
               ? CATEGORIES.find((c) => c.slug === category)?.label
               : "Todos os medicamentos"}
       </h1>
-      <p className="mt-1 text-sm text-muted-foreground">{products.length} produto(s) encontrado(s)</p>
+      <p className="mt-1 text-body-sm text-muted-foreground">{products.length} produto(s) encontrado(s)</p>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        <Link href="/busca" className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-muted">Todos</Link>
-        {CATEGORIES.map((c) => (
-          <Link
-            key={c.slug}
-            href={`/busca?cat=${c.slug}`}
-            className={`rounded-full border px-3 py-1.5 text-xs ${category === c.slug ? "border-primary bg-primary/10 text-primary" : "border-border hover:bg-muted"}`}
-          >
-            {c.icon} {c.label}
-          </Link>
-        ))}
+        <Chip href="/busca" active={!category}>Todos</Chip>
+        {CATEGORIES.map((c) => {
+          const Icon = categoryIcon(c.slug);
+          return (
+            <Chip key={c.slug} href={`/busca?cat=${c.slug}`} active={category === c.slug}>
+              <Icon className="size-3.5" aria-hidden /> {c.label}
+            </Chip>
+          );
+        })}
       </div>
 
       {products.length === 0 ? (

@@ -30,8 +30,8 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: S
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Relatórios</h1>
-          <p className="text-sm text-muted-foreground">Acompanhe vendas e receita.</p>
+          <h1 className="text-[26px] font-bold">Relatórios</h1>
+          <p className="text-body-sm text-muted-foreground">Acompanhe vendas e receita.</p>
         </div>
         <ReportFilters current={safeFilter} />
       </div>
@@ -47,30 +47,30 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: S
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
-          <h2 className="mb-4 font-semibold">Vendas por dia</h2>
+          <h2 className="mb-4 text-subtitle text-[16px] font-semibold">Vendas por dia</h2>
           {report.vendasPorDia.length > 0 ? (
             <LineChartCard data={report.vendasPorDia} dataKey="quantidade" xKey="dia" label="Unidades" />
           ) : <Empty />}
         </Card>
         <Card>
-          <h2 className="mb-4 font-semibold">Produtos mais vendidos</h2>
+          <h2 className="mb-4 text-subtitle text-[16px] font-semibold">Produtos mais vendidos</h2>
           {topBar.length > 0 ? <BarChartCard data={topBar} dataKey="quantidade" xKey="name" label="Unidades" /> : <Empty />}
         </Card>
         <Card>
-          <h2 className="mb-4 font-semibold">Pedidos por tipo de entrega</h2>
+          <h2 className="mb-4 text-subtitle text-[16px] font-semibold">Pedidos por tipo de entrega</h2>
           {pieData.length > 0 ? <PieChartCard data={pieData} /> : <Empty />}
         </Card>
         <Card>
-          <h2 className="mb-3 font-semibold">Top 5 produtos</h2>
+          <h2 className="mb-3 text-subtitle text-[16px] font-semibold">Top 5 produtos</h2>
           {report.topProdutos.length === 0 ? <Empty /> : (
             <ul className="divide-y divide-border">
               {report.topProdutos.map((p, i) => (
                 <li key={p.ean} className="flex items-center justify-between py-2.5">
                   <div className="flex items-center gap-2">
                     <Badge tone="primary">{i + 1}º</Badge>
-                    <span className="text-sm">{p.nome}</span>
+                    <span className="text-body-sm">{p.nome}</span>
                   </div>
-                  <span className="text-sm text-muted-foreground">{p.quantidade} un · {formatBRL(p.receitaCents)}</span>
+                  <span className="text-body-sm text-muted-foreground">{p.quantidade} un · {formatBRL(p.receitaCents)}</span>
                 </li>
               ))}
             </ul>
@@ -84,11 +84,11 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: S
 function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <Card>
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-bold">{value}</p>
+      <p className="text-caption text-muted-foreground">{label}</p>
+      <p className="mt-1 text-[22px] font-bold">{value}</p>
     </Card>
   );
 }
 function Empty({ text = "Sem dados no período." }: { text?: string }) {
-  return <p className="py-10 text-center text-sm text-muted-foreground">{text}</p>;
+  return <p className="py-10 text-center text-body-sm text-muted-foreground">{text}</p>;
 }

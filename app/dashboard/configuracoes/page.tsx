@@ -12,8 +12,8 @@ export default async function ConfiguracoesPage() {
   return (
     <div className="max-w-2xl space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold">Configurações</h1>
-        <p className="text-sm text-muted-foreground">Defina como sua farmácia atende pedidos locais.</p>
+        <h1 className="text-[26px] font-bold">Configurações</h1>
+        <p className="text-body-sm text-muted-foreground">Defina como sua farmácia atende pedidos locais.</p>
       </div>
       <Card>
         <SettingsForm

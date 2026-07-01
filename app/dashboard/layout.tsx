@@ -2,6 +2,7 @@ import { requirePharmacy } from "@/services/auth-guard.service";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { pharmacyRepo } from "@/repositories";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -9,16 +10,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const pharmacy = pharmacyRepo.get(session.pharmacyId);
 
   return (
-    <div className="flex min-h-svh bg-background">
+    <div className="flex min-h-svh flex-col bg-background md:flex-row">
       <DashboardSidebar />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 hidden h-16 items-center justify-between border-b border-border bg-card/80 px-6 backdrop-blur md:flex">
+        <header className="sticky top-0 z-30 hidden h-16 items-center justify-between border-b border-border bg-card/85 px-6 backdrop-blur md:flex">
           <div>
-            <p className="text-sm text-muted-foreground">Olá,</p>
-            <p className="-mt-0.5 font-semibold">{pharmacy?.nomeFantasia ?? "Farmácia"}</p>
+            <p className="text-caption text-muted-foreground">Olá,</p>
+            <p className="-mt-0.5 text-body font-semibold">{pharmacy?.nomeFantasia ?? "Farmácia"}</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">Ver site →</Link>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-muted-foreground hover:text-foreground">
+              Ver site <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
             <ThemeToggle />
           </div>
         </header>

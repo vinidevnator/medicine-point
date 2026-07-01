@@ -1,84 +1,234 @@
 @import "tailwindcss";
 
 @theme inline {
+  /* Semantic surface / text roles */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-panel: var(--panel);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Brand */
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-pressed: var(--primary-pressed);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-purple: var(--purple);
+  --color-sky: var(--sky);
+  --color-soft-pink: var(--soft-pink);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  /* Neutral ramp */
+  --color-gray-900: var(--gray-900);
+  --color-gray-800: var(--gray-800);
+  --color-gray-700: var(--gray-700);
+  --color-gray-600: var(--gray-600);
+  --color-gray-500: var(--gray-500);
+  --color-gray-400: var(--gray-400);
+  --color-gray-300: var(--gray-300);
+  --color-gray-200: var(--gray-200);
+  --color-gray-100: var(--gray-100);
+
+  /* Semantic status */
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-ink: var(--warning-ink);
   --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
 
-  --radius-card: 0.75rem;
+  /* Radius scale */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --radius-card: 16px;
 
-  --font-sans: var(--font-geist-sans);
+  /* Explicitly pinned so max-w-* never resolves against the radius/text scales */
+  --container-3xs: 16rem;
+  --container-2xs: 18rem;
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+  --container-2xl: 42rem;
+  --container-3xl: 48rem;
+  --container-4xl: 56rem;
+  --container-5xl: 64rem;
+  --container-6xl: 72rem;
+  --container-7xl: 80rem;
+
+  /* Elevation (flat-at-rest; used on hover / overlays only) */
+  --shadow-hover: 0 2px 8px rgb(0 0 0 / 0.08);
+  --shadow-popover: 0 8px 24px rgb(0 0 0 / 0.12);
+  --shadow-modal: 0 12px 32px rgb(0 0 0 / 0.18);
+
+  /* Typography roles */
+  --text-display: 48px;
+  --text-display--line-height: 56px;
+  --text-display--letter-spacing: -0.5px;
+  --text-display--font-weight: 700;
+
+  --text-headline: 40px;
+  --text-headline--line-height: 48px;
+  --text-headline--letter-spacing: -0.4px;
+  --text-headline--font-weight: 700;
+
+  --text-title: 24px;
+  --text-title--line-height: 32px;
+  --text-title--font-weight: 600;
+
+  --text-subtitle: 18px;
+  --text-subtitle--line-height: 28px;
+  --text-subtitle--font-weight: 600;
+
+  --text-body: 16px;
+  --text-body--line-height: 24px;
+  --text-body--font-weight: 400;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--font-weight: 400;
+
+  --text-label: 14px;
+  --text-label--line-height: 20px;
+  --text-label--font-weight: 500;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-caption--font-weight: 400;
+
+  --text-button: 16px;
+  --text-button--line-height: 24px;
+  --text-button--font-weight: 600;
+
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #0f172a;
+  --foreground: #202124;
   --card: #ffffff;
-  --card-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #2563eb;
-  --primary: #2563eb;
+  --card-foreground: #202124;
+  --panel: #f6f6f6;
+  --muted: #f6f6f6;
+  --muted-foreground: #666666;
+  --border: #dadada;
+  --input: #dadada;
+  --ring: #22c55e;
+
+  --primary: #f51c79;
   --primary-foreground: #ffffff;
-  --accent: #16a34a;
+  --primary-hover: #e0156d;
+  --primary-pressed: #c81060;
+
+  --secondary: #ffffff;
+  --secondary-foreground: #333333;
+
+  --purple: #5a2d82;
+  --sky: #00a3e0;
+  --soft-pink: #fbe3ee;
+
+  --accent: #5a2d82;
   --accent-foreground: #ffffff;
-  --secondary: #0ea5e9;
-  --secondary-foreground: #ffffff;
-  --success: #16a34a;
+
+  --gray-900: #202124;
+  --gray-800: #333333;
+  --gray-700: #555555;
+  --gray-600: #666666;
+  --gray-500: #767676;
+  --gray-400: #bdbdbd;
+  --gray-300: #dadada;
+  --gray-200: #eeeeee;
+  --gray-100: #f6f6f6;
+
+  --success: #22c55e;
+  --success-foreground: #ffffff;
   --warning: #f59e0b;
-  --danger: #dc2626;
-  --chart-1: #2563eb;
-  --chart-2: #16a34a;
-  --chart-3: #f59e0b;
-  --chart-4: #dc2626;
+  --warning-foreground: #202124;
+  --warning-ink: #92600a;
+  --danger: #ef4444;
+  --danger-foreground: #ffffff;
+  --info: #0ea5e9;
+  --info-foreground: #ffffff;
+
+  --chart-1: #f51c79;
+  --chart-2: #5a2d82;
+  --chart-3: #00a3e0;
+  --chart-4: #f59e0b;
 }
 
 .dark {
-  --background: #0b1220;
-  --foreground: #e2e8f0;
-  --card: #111a2e;
-  --card-foreground: #e2e8f0;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --border: #1e293b;
-  --input: #1e293b;
-  --ring: #3b82f6;
-  --primary: #3b82f6;
-  --primary-foreground: #ffffff;
-  --accent: #22c55e;
-  --accent-foreground: #052e16;
-  --secondary: #0ea5e9;
-  --secondary-foreground: #ffffff;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --chart-1: #3b82f6;
-  --chart-2: #22c55e;
-  --chart-3: #f59e0b;
-  --chart-4: #ef4444;
+  --background: #16121a;
+  --foreground: #f2eef4;
+  --card: #1e1922;
+  --card-foreground: #f2eef4;
+  --panel: #241e2b;
+  --muted: #241e2b;
+  --muted-foreground: #b3a8bd;
+  --border: #35303d;
+  --input: #35303d;
+  --ring: #34d399;
+
+  --primary: #ff4b93;
+  --primary-foreground: #16121a;
+  --primary-hover: #ff6ba6;
+  --primary-pressed: #e0156d;
+
+  --secondary: #1e1922;
+  --secondary-foreground: #f2eef4;
+
+  --purple: #9c7bc4;
+  --sky: #4dc4ee;
+  --soft-pink: #3a2430;
+
+  --accent: #9c7bc4;
+  --accent-foreground: #16121a;
+
+  --gray-900: #f2eef4;
+  --gray-800: #ded6e5;
+  --gray-700: #b3a8bd;
+  --gray-600: #9a8fa6;
+  --gray-500: #8a7f94;
+  --gray-400: #5c5567;
+  --gray-300: #35303d;
+  --gray-200: #241e2b;
+  --gray-100: #1e1922;
+
+  --success: #34d399;
+  --success-foreground: #052e16;
+  --warning: #fbbf24;
+  --warning-foreground: #1c1503;
+  --warning-ink: #fde68a;
+  --danger: #f87171;
+  --danger-foreground: #2c0b0b;
+  --info: #38bdf8;
+  --info-foreground: #04202e;
+
+  --chart-1: #ff4b93;
+  --chart-2: #9c7bc4;
+  --chart-3: #4dc4ee;
+  --chart-4: #fbbf24;
 }
 
 * {
@@ -94,6 +244,11 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--soft-pink);
+  color: var(--primary-pressed);
 }
 
 @keyframes dd-fade-in {
@@ -115,6 +270,15 @@ body {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
   animation: dd-shimmer 1.5s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in { animation: none; }
+  .skeleton::after { animation: none; }
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

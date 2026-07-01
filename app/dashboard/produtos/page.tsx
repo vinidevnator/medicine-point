@@ -2,7 +2,6 @@ import Image from "next/image";
 import { requirePharmacy } from "@/services/auth-guard.service";
 import { productRepo } from "@/repositories";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ProductFormDialog, DeleteProductButton } from "@/components/dashboard/product-dialog";
 import { formatBRL } from "@/lib/format";
@@ -13,14 +12,12 @@ export default async function ProdutosPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Produtos</h1>
-          <p className="text-sm text-muted-foreground">{products.length} produto(s) cadastrado(s).</p>
+          <h1 className="text-[26px] font-bold">Produtos</h1>
+          <p className="text-body-sm text-muted-foreground">{products.length} produto(s) cadastrado(s).</p>
         </div>
-        <div className="w-auto">
-          <ProductFormDialog mode="create" trigger={<Button>+ Novo produto</Button>} />
-        </div>
+        <ProductFormDialog mode="create" label="Novo produto" />
       </div>
 
       {products.length === 0 ? (
@@ -30,28 +27,31 @@ export default async function ProdutosPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => (
-            <Card key={p.id} className="flex flex-col gap-3 p-4">
+            <Card key={p.id} className="flex flex-col gap-3">
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-muted">
                 <Image src={p.imagePath || "/img/med-generico.svg"} alt={p.nome} fill sizes="(max-width:768px) 100vw, 33vw" className="object-contain p-2" />
               </div>
               <div className="flex items-start justify-between gap-2">
-                <h3 className="font-semibold leading-tight">{p.nome}</h3>
+                <h3 className="text-body font-semibold leading-tight">{p.nome}</h3>
                 <Badge tone={p.quantidade > 0 ? "success" : "danger"}>{p.quantidade} un.</Badge>
               </div>
-              <p className="line-clamp-2 text-sm text-muted-foreground">{p.descricao}</p>
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <p className="line-clamp-2 text-body-sm text-muted-foreground">{p.descricao}</p>
+              <div className="flex items-center justify-between text-body-sm text-muted-foreground">
                 <span>EAN {p.ean}</span>
-                <span className="text-lg font-bold text-primary">{formatBRL(p.precoCents)}</span>
+                <span className="text-[17px] font-bold text-foreground">{formatBRL(p.precoCents)}</span>
               </div>
               <div className="flex gap-2 border-t border-border pt-3">
                 <ProductFormDialog
                   mode="edit"
+                  label="Editar"
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1"
                   initial={{
                     id: p.id, ean: p.ean, nome: p.nome, descricao: p.descricao,
                     precoCents: p.precoCents, quantidade: p.quantidade, imagePath: p.imagePath,
                     category: p.category,
                   }}
-                  trigger={<Button variant="outline" size="sm" className="flex-1">Editar</Button>}
                 />
                 <DeleteProductButton id={p.id} />
               </div>
