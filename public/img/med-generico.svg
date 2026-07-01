@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Medicamento">
+  <rect width="400" height="300" fill="#f1f5f9"/>
+  <g fill="none" stroke="#2563eb" stroke-width="6" stroke-linecap="round">
+    <path d="M120 100 L180 160 L150 190 L210 250"/>
+    <rect x="220" y="80" width="70" height="140" rx="14" fill="#2563eb" stroke="none"/>
+  </g>
+  <text x="200" y="280" text-anchor="middle" font-family="Arial" font-size="18" fill="#475569">Medicamento</text>
+</svg>
