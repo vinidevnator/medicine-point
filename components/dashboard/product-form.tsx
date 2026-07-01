@@ -80,8 +80,8 @@ export function ProductForm({ mode, initial, onSuccess }: { mode: Mode; initial?
           <Input id="quantity" name="quantity" type="number" min={0} required defaultValue={initial?.quantity ?? 0} invalid={!!state.fieldErrors?.quantity} />
         </Field>
       </div>
-      <Field label="Imagem (URL)" htmlFor="imagePath" hint="Opcional. Usamos um SVG gerado por padrão.">
-        <Input id="imagePath" name="imagePath" defaultValue={initial?.imagePath ?? ""} placeholder="/img/med-generico.svg" />
+      <Field label="Imagem (URL)" htmlFor="imagePath" hint="Opcional. Usamos /img/med-default.png por padrão.">
+        <Input id="imagePath" name="imagePath" defaultValue={initial?.imagePath ?? ""} placeholder="/img/med-default.png" />
       </Field>
       <Button type="submit" loading={pending} className="w-full">
         {pending ? "Salvando…" : mode === "create" ? "Cadastrar produto" : "Salvar alterações"}

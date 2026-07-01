@@ -24,6 +24,13 @@ export const SP_BBOX = { minLat: -23.9, maxLat: -23.3, minLng: -46.9, maxLng: -4
 
 export const DC_PHARMACY_ID = "dc";
 
+export const ORDER_STATUS_LABEL: Record<string, string> = {
+  released: "Liberado",
+  assembled: "Montado",
+  ready_pickup: "Pronto para coleta",
+  completed: "Finalizado",
+};
+
 export const BR_STATES = [
   { value: "AC", label: "Acre" },
   { value: "AL", label: "Alagoas" },

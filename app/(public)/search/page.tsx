@@ -32,7 +32,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
       name: d.name,
       description: d.description,
       priceCents: lowestPrice,
-      imagePath: imageFor(d.ean),
+      imagePath: defaultMedicineImage(),
       quantity: totalStock,
     };
   });
@@ -77,11 +77,6 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
   );
 }
 
-function imageFor(ean: string): string {
-  const map: Record<string, string> = {
-    "7890000000001": "/img/med-respiratorio.svg",
-    "7890000000002": "/img/med-hipertensao.svg",
-    "7890000000003": "/img/med-febre.svg",
-  };
-  return map[ean] ?? "/img/med-generico.svg";
+function defaultMedicineImage(): string {
+  return "/img/med-default.png";
 }

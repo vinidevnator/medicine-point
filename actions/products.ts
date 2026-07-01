@@ -45,7 +45,7 @@ export async function createProductAction(_prev: ProductState, formData: FormDat
       description: d.description,
       priceCents: parseBRLToCents(d.price),
       quantity: Number(onlyDigits(d.quantity)),
-      imagePath: d.imagePath || `/img/med-generico.svg`,
+      imagePath: d.imagePath || `/img/med-default.png`,
       category: d.category,
     });
   } catch (err) {
@@ -86,7 +86,7 @@ export async function updateProductAction(_prev: ProductState, formData: FormDat
       description: d.description,
       priceCents: parseBRLToCents(d.price),
       quantity: Number(onlyDigits(d.quantity)),
-      imagePath: d.imagePath || product.imagePath,
+      imagePath: d.imagePath || `/img/med-default.png`,
       category: d.category,
     });
   } catch (err) {

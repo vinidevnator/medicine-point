@@ -22,13 +22,13 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         padded={false}
         className="overflow-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
-        <div className="relative aspect-[4/3] bg-muted">
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
           <Image
-            src={product.imagePath || "/img/med-generico.svg"}
+            src={product.imagePath || "/img/med-default.png"}
             alt={product.name}
             fill
             sizes="(max-width:768px) 100vw, 25vw"
-            className="object-cover transition-transform duration-200 group-hover:scale-[1.03]"
+            className="object-contain p-2 transition-transform duration-200 group-hover:scale-[1.03]"
           />
         </div>
         <div className="p-4">

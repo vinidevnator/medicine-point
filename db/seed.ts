@@ -19,7 +19,7 @@ const SEED_PRODUCTS = [
     descricao: "Medicamento utilizado para alívio dos sintomas respiratórios.",
     precoCents: 3990,
     quantidade: 100,
-    imagePath: "/img/med-respiratorio.svg",
+    imagePath: "/img/med-default.png",
     category: "respiratorio" as const,
   },
   {
@@ -28,7 +28,7 @@ const SEED_PRODUCTS = [
     descricao: "Medicamento utilizado para controle da pressão arterial.",
     precoCents: 8990,
     quantidade: 80,
-    imagePath: "/img/med-hipertensao.svg",
+    imagePath: "/img/med-default.png",
     category: "cardio" as const,
   },
   {
@@ -37,7 +37,7 @@ const SEED_PRODUCTS = [
     descricao: "Medicamento para redução da febre e dores leves.",
     precoCents: 1990,
     quantidade: 250,
-    imagePath: "/img/med-febre.svg",
+    imagePath: "/img/med-default.png",
     category: "analgesico" as const,
   },
 ] as const;

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { BarChartCard, LineChartCard, PieChartCard } from "@/components/charts";
 import { orderRepo } from "@/repositories";
 import { formatBRL } from "@/lib/format";
+import { ORDER_STATUS_LABEL } from "@/lib/constants";
 
 export default async function DashboardPage() {
   const session = await requirePharmacy();
@@ -96,7 +97,7 @@ export default async function DashboardPage() {
             {recent.map((o) => (
               <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
                 <Link href={`/order/${o.id}`} className="text-body font-medium hover:text-primary">#{o.id.slice(0, 8)}</Link>
-                <Badge tone={o.status === "completed" ? "success" : "primary"}>{o.status.replace("_", " ")}</Badge>
+                <Badge tone={o.status === "completed" ? "success" : "primary"}>{ORDER_STATUS_LABEL[o.status] ?? o.status}</Badge>
                 <span className="text-body-sm text-muted-foreground">{o.deliveryType}</span>
                 <span className="text-body font-medium">{formatBRL(o.totalPriceCents)}</span>
               </li>

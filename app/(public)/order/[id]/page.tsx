@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stepper } from "@/components/ui/stepper";
 import { formatBRL, formatDateTime, timeLabel } from "@/lib/format";
-import { DELIVERY_TYPES } from "@/lib/constants";
+import { DELIVERY_TYPES, ORDER_STATUS_LABEL } from "@/lib/constants";
 
 type Params = Promise<{ id: string }>;
 
@@ -55,7 +55,7 @@ export default async function OrderPage({ params }: { params: Params }) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-[26px] font-bold">Pedido #{order.id.slice(0, 8)}</h1>
         <Badge tone={order.status === "completed" ? "success" : "primary"}>
-          {order.status.replace("_", " ")}
+          {ORDER_STATUS_LABEL[order.status] ?? order.status}
         </Badge>
       </div>
       <p className="mt-1 text-body-sm text-muted-foreground">

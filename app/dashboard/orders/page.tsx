@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { advanceOrderAction } from "@/actions/orders";
 import { formatBRL, formatDateTime } from "@/lib/format";
-import { DELIVERY_TYPES } from "@/lib/constants";
+import { DELIVERY_TYPES, ORDER_STATUS_LABEL } from "@/lib/constants";
 
 const NEXT_LABEL: Record<string, string | null> = {
   released: "Marcar como montado",
@@ -40,7 +40,7 @@ export default async function OrdersPage() {
                     Pedido #{o.id.slice(0, 8)}
                   </Link>
                   <Badge tone={o.status === "completed" ? "success" : "primary"}>
-                    {o.status.replace("_", " ")}
+                    {ORDER_STATUS_LABEL[o.status] ?? o.status}
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-body-sm text-muted-foreground">

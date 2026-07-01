@@ -29,7 +29,7 @@ export default async function ProductsPage() {
           {products.map((p) => (
             <Card key={p.id} className="flex flex-col gap-3">
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-muted">
-                <Image src={p.imagePath || "/img/med-generico.svg"} alt={p.name} fill sizes="(max-width:768px) 100vw, 33vw" className="object-contain p-2" />
+                <Image src={p.imagePath || "/img/med-default.png"} alt={p.name} fill sizes="(max-width:768px) 100vw, 33vw" className="object-contain p-2" />
               </div>
               <div className="flex items-start justify-between gap-2">
                 <h3 className="text-body font-semibold leading-tight">{p.name}</h3>

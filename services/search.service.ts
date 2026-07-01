@@ -12,6 +12,15 @@ export type PharmacyOffering = {
   estimatedTimeMin: number;
   shippingCents: number;
   deliveryTypes: Array<"pickup" | "moto" | "distribution">;
+  address: {
+    street: string;
+    number: string;
+    complement: string | null;
+    district: string;
+    city: string;
+    state: string;
+    cep: string;
+  } | null;
 };
 
 const DC_TEMP_BY_DISTANCE: Array<{ maxKm: number; min: number }> = [
@@ -70,6 +79,15 @@ export const searchService = {
         estimatedTimeMin: time,
         shippingCents: shipping,
         deliveryTypes: types,
+        address: {
+          street: row.pharmacy.street,
+          number: row.pharmacy.number,
+          complement: row.pharmacy.complement,
+          district: row.pharmacy.district,
+          city: row.pharmacy.city,
+          state: row.pharmacy.state,
+          cep: row.pharmacy.cep,
+        },
       });
     }
 
@@ -91,6 +109,7 @@ export const searchService = {
         estimatedTimeMin: dcTemp.min,
         shippingCents: 0,
         deliveryTypes: ["distribution"],
+        address: null,
       });
     }
 
