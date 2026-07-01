@@ -8,23 +8,23 @@ import { formatBRL, parseDateInputToUnix } from "@/lib/format";
 
 type SearchParams = Promise<{ f?: string; from?: string; to?: string }>;
 
-export default async function RelatoriosPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function ReportsPage({ searchParams }: { searchParams: SearchParams }) {
   const session = await requirePharmacy();
   const { f, from, to } = await searchParams;
   const filter = (f as ReportFilter | undefined) ?? "7d";
   const fromTs = from ? parseDateInputToUnix(from) : null;
   const toTs = to ? parseDateInputToUnix(to) : null;
   const custom = fromTs !== null && toTs !== null ? { from: fromTs, to: toTs + 86399 } : undefined;
-  const okFilters: ReportFilter[] = ["hoje", "ontem", "7d", "30d", "custom"];
+  const okFilters: ReportFilter[] = ["today", "yesterday", "7d", "30d", "custom"];
   const safeFilter = okFilters.includes(filter as ReportFilter) ? filter : "7d";
   const report = reportService.build(session.pharmacyId, safeFilter, custom);
 
   const pieData = [
-    { name: "Retirada", value: report.porRetirada },
-    { name: "Moto", value: report.porMoto },
-    { name: "Distribuição", value: report.porDistribuicao },
+    { name: "Retirada", value: report.byPickup },
+    { name: "Moto", value: report.byMoto },
+    { name: "Distribuição", value: report.byDistribution },
   ].filter((d) => d.value > 0);
-  const topBar = report.topProdutos.map((p) => ({ name: p.nome.slice(0, 14), quantidade: p.quantidade }));
+  const topBar = report.topProducts.map((p) => ({ name: p.name.slice(0, 14), quantidade: p.quantity }));
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -37,19 +37,19 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: S
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-        <Stat label="Produtos vendidos" value={report.totalVendido} />
-        <Stat label="Receita" value={formatBRL(report.receitaCents)} />
-        <Stat label="Pedidos por retirada" value={report.porRetirada} />
-        <Stat label="Pedidos por moto" value={report.porMoto} />
-        <Stat label="Pedidos por distribuição" value={report.porDistribuicao} />
-        <Stat label="Itens no topo" value={report.topProdutos.length} />
+        <Stat label="Produtos vendidos" value={report.totalSold} />
+        <Stat label="Receita" value={formatBRL(report.revenueCents)} />
+        <Stat label="Pedidos por retirada" value={report.byPickup} />
+        <Stat label="Pedidos por moto" value={report.byMoto} />
+        <Stat label="Pedidos por distribuição" value={report.byDistribution} />
+        <Stat label="Itens no topo" value={report.topProducts.length} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <h2 className="mb-4 text-subtitle text-[16px] font-semibold">Vendas por dia</h2>
-          {report.vendasPorDia.length > 0 ? (
-            <LineChartCard data={report.vendasPorDia} dataKey="quantidade" xKey="dia" label="Unidades" />
+          {report.salesByDay.length > 0 ? (
+            <LineChartCard data={report.salesByDay} dataKey="quantity" xKey="day" label="Unidades" />
           ) : <Empty />}
         </Card>
         <Card>
@@ -62,15 +62,15 @@ export default async function RelatoriosPage({ searchParams }: { searchParams: S
         </Card>
         <Card>
           <h2 className="mb-3 text-subtitle text-[16px] font-semibold">Top 5 produtos</h2>
-          {report.topProdutos.length === 0 ? <Empty /> : (
+          {report.topProducts.length === 0 ? <Empty /> : (
             <ul className="divide-y divide-border">
-              {report.topProdutos.map((p, i) => (
+              {report.topProducts.map((p, i) => (
                 <li key={p.ean} className="flex items-center justify-between py-2.5">
                   <div className="flex items-center gap-2">
                     <Badge tone="primary">{i + 1}º</Badge>
-                    <span className="text-body-sm">{p.nome}</span>
+                    <span className="text-body-sm">{p.name}</span>
                   </div>
-                  <span className="text-body-sm text-muted-foreground">{p.quantidade} un · {formatBRL(p.receitaCents)}</span>
+                  <span className="text-body-sm text-muted-foreground">{p.quantity} un · {formatBRL(p.revenueCents)}</span>
                 </li>
               ))}
             </ul>

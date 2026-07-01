@@ -12,10 +12,10 @@ import { cn } from "@/lib/cn";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/busca", label: "Medicamentos" },
-  { href: "/busca?cat=respiratorio", label: "Respiratório" },
-  { href: "/busca?cat=cardio", label: "Cardiovascular" },
-  { href: "/busca?cat=analgesico", label: "Analgésicos" },
+  { href: "/search", label: "Medicamentos" },
+  { href: "/search?cat=respiratorio", label: "Respiratório" },
+  { href: "/search?cat=cardio", label: "Cardiovascular" },
+  { href: "/search?cat=analgesico", label: "Analgésicos" },
 ];
 
 export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
@@ -27,7 +27,7 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();
     const q = query.trim();
-    router.push(q ? `/busca?q=${encodeURIComponent(q)}` : "/busca");
+    router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
   }
 
   return (
@@ -82,17 +82,17 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
           <ThemeToggle />
-          <Link href="/entrar">
+          <Link href="/login">
             <Button variant="secondary" size="sm">Sou Farmácia</Button>
           </Link>
-          <Link href="/cadastrar">
+          <Link href="/register">
             <Button size="sm">Cadastrar</Button>
           </Link>
         </div>
 
         <div className="ml-auto flex items-center gap-2 md:hidden">
           <ThemeToggle />
-          <Link href="/entrar">
+          <Link href="/login">
             <Button size="sm" variant="secondary">Entrar</Button>
           </Link>
         </div>
@@ -105,7 +105,7 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
               e.preventDefault();
               const q = query.trim();
               setOpen(false);
-              router.push(q ? `/busca?q=${encodeURIComponent(q)}` : "/busca");
+              router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
             }}
             className="mb-4"
           >
@@ -135,7 +135,7 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
             </li>
           ))}
           <li className="mt-2 border-t border-border pt-2">
-            <Link href="/cadastrar" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-body font-medium text-primary hover:bg-muted">
+            <Link href="/register" onClick={() => setOpen(false)} className="block rounded-lg px-3 py-3 text-body font-medium text-primary hover:bg-muted">
               Cadastrar farmácia
             </Link>
           </li>

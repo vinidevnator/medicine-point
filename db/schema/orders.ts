@@ -7,19 +7,19 @@ export const orders = sqliteTable("orders", {
   pharmacyId: text("pharmacy_id")
     .notNull()
     .references(() => pharmacies.id, { onDelete: "cascade" }),
-  cepCliente: text("cep_cliente").notNull(),
-  tipoEntrega: text("tipo_entrega", {
-    enum: ["retirada", "moto", "distribuicao"],
+  customerCep: text("customer_cep").notNull(),
+  deliveryType: text("delivery_type", {
+    enum: ["pickup", "moto", "distribution"],
   }).notNull(),
   status: text("status", {
-    enum: ["liberado", "montado", "pronto_coleta", "finalizado"],
+    enum: ["released", "assembled", "ready_pickup", "completed"],
   }).notNull(),
-  precoTotalCents: integer("preco_total_cents").notNull(),
-  freteCents: integer("frete_cents").notNull().default(0),
-  distanciaKm: real("distancia_km"),
-  tempoEstimadoMin: integer("tempo_estimado_min").notNull(),
-  etapa1At: integer("etapa1_at", { mode: "timestamp" }),
-  etapa2At: integer("etapa2_at", { mode: "timestamp" }),
-  etapa3At: integer("etapa3_at", { mode: "timestamp" }),
+  totalPriceCents: integer("total_price_cents").notNull(),
+  shippingCents: integer("shipping_cents").notNull().default(0),
+  distanceKm: real("distance_km"),
+  estimatedTimeMin: integer("estimated_time_min").notNull(),
+  stage1At: integer("stage1_at", { mode: "timestamp" }),
+  stage2At: integer("stage2_at", { mode: "timestamp" }),
+  stage3At: integer("stage3_at", { mode: "timestamp" }),
   ...timestamps,
 });

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   description:
     "Encontre medicamentos disponíveis em farmácias próximas via CEP. Retire na loja, receba por motoentrega ou pelo centro de distribuição.",
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   openGraph: {
     title: "Medicine Point",
     description: "Marketplace de medicamentos com retirada, motoentrega e centro de distribuição.",

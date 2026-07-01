@@ -1,17 +1,17 @@
 import "server-only";
 import { pharmacyRepo, productRepo } from "@/repositories";
 import { cepToCoords, haversineKm } from "@/lib/cep-data";
-import { DELIVERY_TIPOS, DC_PHARMACY_ID } from "@/lib/constants";
+import { DELIVERY_TYPES, DC_PHARMACY_ID } from "@/lib/constants";
 
 export type PharmacyOffering = {
   pharmacyId: string;
-  nomeFantasia: string;
-  distanciaKm: number;
-  quantidade: number;
-  precoCents: number;
-  tempoEstimadoMin: number;
-  freteCents: number;
-  tiposEntrega: Array<"retirada" | "moto" | "distribuicao">;
+  tradeName: string;
+  distanceKm: number;
+  quantity: number;
+  priceCents: number;
+  estimatedTimeMin: number;
+  shippingCents: number;
+  deliveryTypes: Array<"pickup" | "moto" | "distribution">;
 };
 
 const DC_TEMP_BY_DISTANCE: Array<{ maxKm: number; min: number }> = [
@@ -36,58 +36,61 @@ export const searchService = {
     const offerings: PharmacyOffering[] = [];
 
     for (const p of allProducts) {
-      if (p.quantidade <= 0) continue;
+      if (p.quantity <= 0) continue;
       const row = allPharmacies.find((r) => r.pharmacy.id === p.pharmacyId);
       if (!row) continue;
       const distance = haversineKm(clientCoords, { lat: row.pharmacy.lat, lng: row.pharmacy.lng });
-      if (distance > row.settings.raioKm) continue;
+      if (distance > row.settings.radiusKm) continue;
 
-      const tipos: Array<"retirada" | "moto" | "distribuicao"> = [];
-      let tempo = Infinity;
-      let frete = 0;
+      const types: Array<"pickup" | "moto" | "distribution"> = [];
+      let time = Infinity;
+      let shipping = 0;
 
-      if (row.settings.aceitaRetirada) {
-        tipos.push("retirada");
-        tempo = Math.min(tempo, DELIVERY_TIPOS.retirada.tempoMin);
+      if (row.settings.acceptsPickup) {
+        types.push("pickup");
+        time = Math.min(time, DELIVERY_TYPES.pickup.timeMin);
       }
-      if (row.settings.aceitaMoto) {
-        tipos.push("moto");
-        const motoTempo = Math.min(
-          DELIVERY_TIPOS.moto.tempoMin,
+      if (row.settings.acceptsMoto) {
+        types.push("moto");
+        const motoTime = Math.min(
+          DELIVERY_TYPES.moto.timeMin,
           30 + Math.round(distance * 6)
         );
-        tempo = Math.min(tempo, motoTempo);
-        frete = row.settings.freteMotoCents;
+        time = Math.min(time, motoTime);
+        shipping = row.settings.motoShippingCents;
       }
-      if (tipos.length === 0) continue;
+      if (types.length === 0) continue;
 
       offerings.push({
         pharmacyId: p.pharmacyId,
-        nomeFantasia: row.pharmacy.nomeFantasia,
-        distanciaKm: Math.round(distance * 10) / 10,
-        quantidade: p.quantidade,
-        precoCents: p.precoCents,
-        tempoEstimadoMin: tempo,
-        freteCents: frete,
-        tiposEntrega: tipos,
+        tradeName: row.pharmacy.tradeName,
+        distanceKm: Math.round(distance * 10) / 10,
+        quantity: p.quantity,
+        priceCents: p.priceCents,
+        estimatedTimeMin: time,
+        shippingCents: shipping,
+        deliveryTypes: types,
       });
     }
 
-    offerings.sort((a, b) => a.distanciaKm - b.distanciaKm);
+    offerings.sort((a, b) => a.distanceKm - b.distanceKm);
 
     if (!offerings.some((o) => o.pharmacyId === DC_PHARMACY_ID)) {
       const dcRow = pharmacyRepo.get(DC_PHARMACY_ID);
       const dcDistance = dcRow ? haversineKm(clientCoords, { lat: dcRow.lat, lng: dcRow.lng }) : 0;
       const dcTemp = DC_TEMP_BY_DISTANCE.find((b) => dcDistance <= b.maxKm) ?? DC_TEMP_BY_DISTANCE[DC_TEMP_BY_DISTANCE.length - 1];
+      // DC price must match what placeOrder charges: the global reference product
+      // row's price (same source ensureDcStock copies into the DC stock row).
+      const dcReferencePrice = allProducts[0]?.priceCents ?? offerings[0]?.priceCents ?? 0;
       offerings.push({
         pharmacyId: DC_PHARMACY_ID,
-        nomeFantasia: "Centro de Distribuição",
-        distanciaKm: Math.round(dcDistance * 10) / 10,
-        quantidade: 999,
-        precoCents: offerings[0]?.precoCents ?? 3990,
-        tempoEstimadoMin: dcTemp.min,
-        freteCents: 0,
-        tiposEntrega: ["distribuicao"],
+        tradeName: "Centro de Distribuição",
+        distanceKm: Math.round(dcDistance * 10) / 10,
+        quantity: 999,
+        priceCents: dcReferencePrice,
+        estimatedTimeMin: dcTemp.min,
+        shippingCents: 0,
+        deliveryTypes: ["distribution"],
       });
     }
 
@@ -95,15 +98,17 @@ export const searchService = {
   },
 
   estimateDelivery(
-    tipo: "retirada" | "moto" | "distribuicao",
+    type: "pickup" | "moto" | "distribution",
     distance: number
-  ): { tempoMin: number; freteCents: number; freteMotoCents: number } {
-    if (tipo === "retirada") return { tempoMin: DELIVERY_TIPOS.retirada.tempoMin, freteCents: 0, freteMotoCents: 0 };
-    if (tipo === "moto") {
-      const t = Math.min(DELIVERY_TIPOS.moto.tempoMin, 30 + Math.round(distance * 6));
-      return { tempoMin: t, freteCents: 599, freteMotoCents: 599 };
+  ): { timeMin: number; shippingCents: number; motoShippingCents: number } {
+    if (type === "pickup") return { timeMin: DELIVERY_TYPES.pickup.timeMin, shippingCents: 0, motoShippingCents: 0 };
+    if (type === "moto") {
+      const t = Math.min(DELIVERY_TYPES.moto.timeMin, 30 + Math.round(distance * 6));
+      return { timeMin: t, shippingCents: 599, motoShippingCents: 599 };
     }
-    const band = DC_TEMP_BY_DISTANCE.find((b) => distance <= b.maxKm)!;
-    return { tempoMin: band.min, freteCents: 0, freteMotoCents: 0 };
+    const band =
+      DC_TEMP_BY_DISTANCE.find((b) => distance <= b.maxKm) ??
+      DC_TEMP_BY_DISTANCE[DC_TEMP_BY_DISTANCE.length - 1];
+    return { timeMin: band.min, shippingCents: 0, motoShippingCents: 0 };
   },
 };

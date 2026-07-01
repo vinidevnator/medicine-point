@@ -16,9 +16,9 @@ export function SiteFooter() {
           <h3 className="mb-3 text-label text-foreground">Navegação</h3>
           <ul className="space-y-2.5 text-body-sm text-muted-foreground">
             <li><Link href="/" className="hover:text-foreground">Home</Link></li>
-            <li><Link href="/busca" className="hover:text-foreground">Medicamentos</Link></li>
-            <li><Link href="/cadastrar" className="hover:text-foreground">Cadastrar farmácia</Link></li>
-            <li><Link href="/entrar" className="hover:text-foreground">Sou Farmácia</Link></li>
+            <li><Link href="/search" className="hover:text-foreground">Medicamentos</Link></li>
+            <li><Link href="/register" className="hover:text-foreground">Cadastrar farmácia</Link></li>
+            <li><Link href="/login" className="hover:text-foreground">Sou Farmácia</Link></li>
           </ul>
         </div>
         <div>

@@ -110,23 +110,17 @@ export const productRepo = {
       .where(eq(products.id, id))
       .run();
   },
-  setQuantity(id: string, quantidade: number) {
-    db.update(products)
-      .set({ quantidade, updatedAt: new Date() })
-      .where(eq(products.id, id))
-      .run();
-  },
   delete(id: string) {
     db.delete(products).where(eq(products.id, id)).run();
   },
   listDistinctEans() {
     const rows = db
-      .select({ ean: products.ean, nome: products.nome, descricao: products.descricao, category: products.category })
+      .select({ ean: products.ean, name: products.name, description: products.description, category: products.category })
       .from(products)
       .all();
-    const map = new Map<string, { ean: string; nome: string; descricao: string; category: string }>();
+    const map = new Map<string, { ean: string; name: string; description: string; category: string }>();
     for (const r of rows) {
-      if (!map.has(r.ean)) map.set(r.ean, { ean: r.ean, nome: r.nome, descricao: r.descricao, category: r.category });
+      if (!map.has(r.ean)) map.set(r.ean, { ean: r.ean, name: r.name, description: r.description, category: r.category });
     }
     return [...map.values()];
   },

@@ -7,16 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { advanceOrderAction } from "@/actions/orders";
 import { formatBRL, formatDateTime } from "@/lib/format";
-import { DELIVERY_TIPOS } from "@/lib/constants";
+import { DELIVERY_TYPES } from "@/lib/constants";
 
 const NEXT_LABEL: Record<string, string | null> = {
-  liberado: "Marcar como montado",
-  montado: "Marcar pronto para coleta",
-  pronto_coleta: "Finalizar pedido",
-  finalizado: null,
+  released: "Marcar como montado",
+  assembled: "Marcar pronto para coleta",
+  ready_pickup: "Finalizar pedido",
+  completed: null,
 };
 
-export default async function PedidosPage() {
+export default async function OrdersPage() {
   const session = await requirePharmacy();
   const orders = orderRepo.listByPharmacy(session.pharmacyId);
 
@@ -36,21 +36,21 @@ export default async function PedidosPage() {
             return (
               <Card key={o.id} className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <Link href={`/pedido/${o.id}`} className="text-body font-semibold hover:text-primary">
+                  <Link href={`/order/${o.id}`} className="text-body font-semibold hover:text-primary">
                     Pedido #{o.id.slice(0, 8)}
                   </Link>
-                  <Badge tone={o.status === "finalizado" ? "success" : "primary"}>
+                  <Badge tone={o.status === "completed" ? "success" : "primary"}>
                     {o.status.replace("_", " ")}
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-body-sm text-muted-foreground">
-                  <span>Entrega: {DELIVERY_TIPOS[o.tipoEntrega].label}</span>
-                  <span>CEP: {o.cepCliente.slice(0,5)}-{o.cepCliente.slice(5)}</span>
+                  <span>Entrega: {DELIVERY_TYPES[o.deliveryType].label}</span>
+                  <span>CEP: {o.customerCep.slice(0,5)}-{o.customerCep.slice(5)}</span>
                   <span>Criado: {formatDateTime(Math.floor(o.createdAt.getTime() / 1000))}</span>
-                  <span className="font-semibold text-foreground">{formatBRL(o.precoTotalCents)}</span>
+                  <span className="font-semibold text-foreground">{formatBRL(o.totalPriceCents)}</span>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
-                  <Link href={`/pedido/${o.id}`}>
+                  <Link href={`/order/${o.id}`}>
                     <Button variant="secondary" size="sm">
                       Ver status <ArrowRight className="size-3.5" aria-hidden />
                     </Button>

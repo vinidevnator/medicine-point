@@ -1,16 +1,17 @@
 import "server-only";
 import { orderRepo, productRepo } from "@/repositories";
+import { startOfDayUnix } from "@/lib/format";
 
-export type ReportFilter = "hoje" | "ontem" | "7d" | "30d" | "custom";
+export type ReportFilter = "today" | "yesterday" | "7d" | "30d" | "custom";
 
 export type ReportData = {
-  totalVendido: number;
-  receitaCents: number;
-  porRetirada: number;
-  porMoto: number;
-  porDistribuicao: number;
-  topProdutos: Array<{ nome: string; ean: string; quantidade: number; receitaCents: number }>;
-  vendasPorDia: Array<{ dia: string; quantidade: number; receitaCents: number }>;
+  totalSold: number;
+  revenueCents: number;
+  byPickup: number;
+  byMoto: number;
+  byDistribution: number;
+  topProducts: Array<{ name: string; ean: string; quantity: number; revenueCents: number }>;
+  salesByDay: Array<{ day: string; quantity: number; revenueCents: number }>;
 };
 
 export const reportService = {
@@ -19,67 +20,67 @@ export const reportService = {
     const orders = orderRepo.summaryForRange(pharmacyId, from, to);
     const items = orderRepo.itemsForRange(pharmacyId, from, to);
 
-    const totalVendido = items.reduce((s, i) => s + i.quantidade, 0);
-    const receitaCents = orders.reduce((s, o) => s + o.total, 0);
-    const porRetirada = orders.filter((o) => o.tipoEntrega === "retirada").length;
-    const porMoto = orders.filter((o) => o.tipoEntrega === "moto").length;
-    const porDistribuicao = orders.filter((o) => o.tipoEntrega === "distribuicao").length;
+    const totalSold = items.reduce((s, i) => s + i.quantity, 0);
+    const revenueCents = orders.reduce((s, o) => s + o.total, 0);
+    const byPickup = orders.filter((o) => o.deliveryType === "pickup").length;
+    const byMoto = orders.filter((o) => o.deliveryType === "moto").length;
+    const byDistribution = orders.filter((o) => o.deliveryType === "distribution").length;
 
-    const topMap = new Map<string, { nome: string; quantidade: number; receitaCents: number }>();
+    const topMap = new Map<string, { name: string; quantity: number; revenueCents: number }>();
     for (const it of items) {
-      const cur = topMap.get(it.ean) ?? { nome: it.nome, quantidade: 0, receitaCents: 0 };
-      cur.quantidade += it.quantidade;
-      cur.receitaCents += it.unit * it.quantidade;
+      const cur = topMap.get(it.ean) ?? { name: it.name, quantity: 0, revenueCents: 0 };
+      cur.quantity += it.quantity;
+      cur.revenueCents += it.unit * it.quantity;
       topMap.set(it.ean, cur);
     }
-    const topProdutos = [...topMap.entries()]
+    const topProducts = [...topMap.entries()]
       .map(([ean, v]) => ({ ean, ...v }))
-      .sort((a, b) => b.quantidade - a.quantidade)
+      .sort((a, b) => b.quantity - a.quantity)
       .slice(0, 5);
 
-    const vendasPorDia: Array<{ dia: string; quantidade: number; receitaCents: number }> = [];
+    const salesByDay: Array<{ day: string; quantity: number; revenueCents: number }> = [];
     if (days > 0 && days <= 31) {
-      const map = new Map<string, { quantidade: number; receitaCents: number }>();
+      const map = new Map<string, { quantity: number; revenueCents: number }>();
       for (let i = 0; i < days; i++) {
         const d = new Date((from + i * 86400) * 1000);
-        map.set(dKey(d), { quantidade: 0, receitaCents: 0 });
+        map.set(dayKey(d), { quantity: 0, revenueCents: 0 });
       }
       for (const it of items) {
-        const k = dKey(it.createdAt);
-        const cur = map.get(k) ?? { quantidade: 0, receitaCents: 0 };
-        cur.quantidade += it.quantidade;
-        cur.receitaCents += it.unit * it.quantidade;
+        const k = dayKey(it.createdAt);
+        const cur = map.get(k) ?? { quantity: 0, revenueCents: 0 };
+        cur.quantity += it.quantity;
+        cur.revenueCents += it.unit * it.quantity;
         map.set(k, cur);
       }
-      for (const [k, v] of map) vendasPorDia.push({ dia: k, ...v });
+      for (const [k, v] of map) salesByDay.push({ day: k, ...v });
     }
 
     return {
-      totalVendido,
-      receitaCents,
-      porRetirada,
-      porMoto,
-      porDistribuicao,
-      topProdutos,
-      vendasPorDia,
+      totalSold,
+      revenueCents,
+      byPickup,
+      byMoto,
+      byDistribution,
+      topProducts,
+      salesByDay,
     };
   },
 
   dashboardKpis(pharmacyId: string) {
     return {
-      produtosCadastrados: productRepo.listByPharmacy(pharmacyId).length,
-      vendidosHoje: orderRepo.soldToday(pharmacyId),
-      vendidosMes: orderRepo.soldThisMonth(pharmacyId),
-      aguardandoRetirada: orderRepo.countByStatus(pharmacyId, "pronto_coleta"),
-      pedidosMoto: countByTipo(pharmacyId, "moto"),
-      receitaEstimada: orderRepo.revenueEstimate(pharmacyId),
+      registeredProducts: productRepo.listByPharmacy(pharmacyId).length,
+      soldToday: orderRepo.soldToday(pharmacyId),
+      soldThisMonth: orderRepo.soldThisMonth(pharmacyId),
+      awaitingPickup: orderRepo.countByStatus(pharmacyId, "ready_pickup"),
+      motoOrders: countByType(pharmacyId, "moto"),
+      estimatedRevenue: orderRepo.revenueEstimate(pharmacyId),
     };
   },
 };
 
-function countByTipo(pharmacyId: string, tipo: "retirada" | "moto" | "distribuicao"): number {
+function countByType(pharmacyId: string, type: "pickup" | "moto" | "distribution"): number {
   const list = orderRepo.listByPharmacy(pharmacyId);
-  return list.filter((o) => o.tipoEntrega === tipo).length;
+  return list.filter((o) => o.deliveryType === type).length;
 }
 
 function resolveRange(filter: ReportFilter, custom?: { from: number; to: number }): {
@@ -88,14 +89,12 @@ function resolveRange(filter: ReportFilter, custom?: { from: number; to: number 
   days: number;
 } {
   const now = Math.floor(Date.now() / 1000);
-  if (filter === "hoje") {
-    const from = Math.floor(new Date().setHours(0, 0, 0, 0) / 1000);
+  if (filter === "today") {
+    const from = startOfDayUnix();
     return { from, to: now, days: 1 };
   }
-  if (filter === "ontem") {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    const to = Math.floor(d.getTime() / 1000);
+  if (filter === "yesterday") {
+    const to = startOfDayUnix();
     const from = to - 86400;
     return { from, to, days: 1 };
   }
@@ -105,6 +104,6 @@ function resolveRange(filter: ReportFilter, custom?: { from: number; to: number 
   return { from: now - 7 * 86400, to: now, days: 7 };
 }
 
-function dKey(d: Date): string {
+function dayKey(d: Date): string {
   return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 }

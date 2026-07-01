@@ -38,7 +38,7 @@ export async function fetchCep(cep: string): Promise<CepAddress> {
       logradouro: json.logradouro ?? "",
       bairro: json.bairro ?? "",
       cidade: json.localidade ?? "",
-      estado: estadoName(json.uf ?? ""),
+      estado: stateName(json.uf ?? ""),
       uf: json.uf ?? "",
     };
   } catch {
@@ -46,7 +46,7 @@ export async function fetchCep(cep: string): Promise<CepAddress> {
   }
 }
 
-function estadoName(uf: string): string {
+function stateName(uf: string): string {
   const map: Record<string, string> = {
     SP: "São Paulo", RJ: "Rio de Janeiro", MG: "Minas Gerais", BA: "Bahia",
     PR: "Paraná", RS: "Rio Grande do Sul", CE: "Ceará", PE: "Pernambuco",

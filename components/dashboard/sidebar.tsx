@@ -10,11 +10,11 @@ import { logoutAction } from "@/actions/auth";
 
 const items = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/produtos", label: "Produtos", icon: Pill },
-  { href: "/dashboard/pedidos", label: "Pedidos", icon: Package },
-  { href: "/dashboard/relatorios", label: "Relatórios", icon: TrendingUp },
-  { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
-  { href: "/dashboard/conta", label: "Minha Conta", icon: User },
+  { href: "/dashboard/products", label: "Produtos", icon: Pill },
+  { href: "/dashboard/orders", label: "Pedidos", icon: Package },
+  { href: "/dashboard/reports", label: "Relatórios", icon: TrendingUp },
+  { href: "/dashboard/settings", label: "Configurações", icon: Settings },
+  { href: "/dashboard/account", label: "Minha Conta", icon: User },
 ];
 
 export function DashboardSidebar() {

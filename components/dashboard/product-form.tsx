@@ -14,10 +14,10 @@ type Mode = "create" | "edit";
 type Initial = {
   id?: string;
   ean?: string;
-  nome?: string;
-  descricao?: string;
-  precoCents?: number;
-  quantidade?: number;
+  name?: string;
+  description?: string;
+  priceCents?: number;
+  quantity?: number;
   imagePath?: string;
   category?: string;
 };
@@ -25,8 +25,8 @@ type Initial = {
 export function ProductForm({ mode, initial, onSuccess }: { mode: Mode; initial?: Initial; onSuccess?: () => void }) {
   const action = mode === "create" ? createProductAction : updateProductAction;
   const [state, formAction, pending] = useActionState<ProductState, FormData>(action, { ok: false });
-  const cents = initial?.precoCents;
-  const precoDefaultValue = cents !== undefined ? (cents / 100).toFixed(2).replace(".", ",") : "";
+  const cents = initial?.priceCents;
+  const priceDefaultValue = cents !== undefined ? (cents / 100).toFixed(2).replace(".", ",") : "";
 
   useEffect(() => {
     if (state.ok) onSuccess?.();
@@ -48,14 +48,14 @@ export function ProductForm({ mode, initial, onSuccess }: { mode: Mode; initial?
           invalid={!!state.fieldErrors?.ean}
         />
       </Field>
-      <Field label="Nome" htmlFor="nome" error={state.fieldErrors?.nome}>
-        <Input id="nome" name="nome" required defaultValue={initial?.nome ?? ""} invalid={!!state.fieldErrors?.nome} />
+      <Field label="Nome" htmlFor="name" error={state.fieldErrors?.name}>
+        <Input id="name" name="name" required defaultValue={initial?.name ?? ""} invalid={!!state.fieldErrors?.name} />
       </Field>
-      <Field label="Descrição" htmlFor="descricao" error={state.fieldErrors?.descricao}>
+      <Field label="Descrição" htmlFor="description" error={state.fieldErrors?.description}>
         <Textarea
-          id="descricao" name="descricao" required rows={3}
-          defaultValue={initial?.descricao ?? ""}
-          invalid={!!state.fieldErrors?.descricao}
+          id="description" name="description" required rows={3}
+          defaultValue={initial?.description ?? ""}
+          invalid={!!state.fieldErrors?.description}
         />
       </Field>
       <Field label="Categoria" htmlFor="category" error={state.fieldErrors?.category}>
@@ -73,11 +73,11 @@ export function ProductForm({ mode, initial, onSuccess }: { mode: Mode; initial?
         </Select>
       </Field>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Preço (R$)" htmlFor="preco" error={state.fieldErrors?.preco} hint="Ex.: 39,90">
-          <Input id="preco" name="preco" inputMode="decimal" required defaultValue={precoDefaultValue} invalid={!!state.fieldErrors?.preco} />
+        <Field label="Preço (R$)" htmlFor="price" error={state.fieldErrors?.price} hint="Ex.: 39,90">
+          <Input id="price" name="price" inputMode="decimal" required defaultValue={priceDefaultValue} invalid={!!state.fieldErrors?.price} />
         </Field>
-        <Field label="Quantidade" htmlFor="quantidade" error={state.fieldErrors?.quantidade}>
-          <Input id="quantidade" name="quantidade" type="number" min={0} required defaultValue={initial?.quantidade ?? 0} invalid={!!state.fieldErrors?.quantidade} />
+        <Field label="Quantidade" htmlFor="quantity" error={state.fieldErrors?.quantity}>
+          <Input id="quantity" name="quantity" type="number" min={0} required defaultValue={initial?.quantity ?? 0} invalid={!!state.fieldErrors?.quantity} />
         </Field>
       </div>
       <Field label="Imagem (URL)" htmlFor="imagePath" hint="Opcional. Usamos um SVG gerado por padrão.">

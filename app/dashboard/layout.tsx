@@ -16,7 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <header className="sticky top-0 z-30 hidden h-16 items-center justify-between border-b border-border bg-card/85 px-6 backdrop-blur md:flex">
           <div>
             <p className="text-caption text-muted-foreground">Olá,</p>
-            <p className="-mt-0.5 text-body font-semibold">{pharmacy?.nomeFantasia ?? "Farmácia"}</p>
+            <p className="-mt-0.5 text-body font-semibold">{pharmacy?.tradeName ?? "Farmácia"}</p>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/" className="inline-flex items-center gap-1.5 text-body-sm font-medium text-muted-foreground hover:text-foreground">

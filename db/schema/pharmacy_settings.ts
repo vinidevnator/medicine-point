@@ -9,15 +9,15 @@ export const pharmacySettings = sqliteTable(
     pharmacyId: text("pharmacy_id")
       .notNull()
       .references(() => pharmacies.id, { onDelete: "cascade" }),
-    cepBase: text("cep_base").notNull(),
-    raioKm: integer("raio_km").notNull().default(10),
-    aceitaRetirada: integer("aceita_retirada", { mode: "boolean" })
+    baseCep: text("base_cep").notNull(),
+    radiusKm: integer("radius_km").notNull().default(10),
+    acceptsPickup: integer("accepts_pickup", { mode: "boolean" })
       .notNull()
       .default(true),
-    aceitaMoto: integer("aceita_moto", { mode: "boolean" })
+    acceptsMoto: integer("accepts_moto", { mode: "boolean" })
       .notNull()
       .default(true),
-    freteMotoCents: integer("frete_moto_cents").notNull().default(599),
+    motoShippingCents: integer("moto_shipping_cents").notNull().default(599),
     ...timestamps,
   },
   (t) => [uniqueIndex("pharmacy_settings_pharmacy_unique").on(t.pharmacyId)]

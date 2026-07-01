@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Field } from "@/components/field";
 import { updateAccountAction, type SettingsState } from "@/actions/settings";
 
-export function AccountForm({ initial }: { initial: { razaoSocial: string; nomeFantasia: string; email: string } }) {
+export function AccountForm({ initial }: { initial: { legalName: string; tradeName: string; email: string } }) {
   const [state, action, pending] = useActionState<SettingsState, FormData>(updateAccountAction, { ok: false });
   return (
     <form action={action} className="space-y-4">
@@ -20,11 +20,11 @@ export function AccountForm({ initial }: { initial: { razaoSocial: string; nomeF
           <AlertCircle className="size-4 shrink-0" aria-hidden /> {state.error}
         </p>
       )}
-      <Field label="Razão Social" htmlFor="razaoSocial" error={state.fieldErrors?.razaoSocial}>
-        <Input id="razaoSocial" name="razaoSocial" required defaultValue={initial.razaoSocial} invalid={!!state.fieldErrors?.razaoSocial} />
+      <Field label="Razão Social" htmlFor="legalName" error={state.fieldErrors?.legalName}>
+        <Input id="legalName" name="legalName" required defaultValue={initial.legalName} invalid={!!state.fieldErrors?.legalName} />
       </Field>
-      <Field label="Nome Fantasia" htmlFor="nomeFantasia" error={state.fieldErrors?.nomeFantasia}>
-        <Input id="nomeFantasia" name="nomeFantasia" required defaultValue={initial.nomeFantasia} invalid={!!state.fieldErrors?.nomeFantasia} />
+      <Field label="Nome Fantasia" htmlFor="tradeName" error={state.fieldErrors?.tradeName}>
+        <Input id="tradeName" name="tradeName" required defaultValue={initial.tradeName} invalid={!!state.fieldErrors?.tradeName} />
       </Field>
       <Field label="E-mail" htmlFor="email" error={state.fieldErrors?.email}>
         <Input id="email" name="email" type="email" required defaultValue={initial.email} invalid={!!state.fieldErrors?.email} />

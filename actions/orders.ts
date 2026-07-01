@@ -15,28 +15,29 @@ export async function buyNowAction(
 ): Promise<BuyState> {
   const pharmacyId = String(formData.get("pharmacyId") ?? "");
   const productEan = String(formData.get("ean") ?? "");
-  const cepCliente = String(formData.get("cep") ?? "").replace(/\D/g, "");
-  const tipoEntrega = String(formData.get("tipoEntrega") ?? "retirada") as
-    | "retirada"
+  const customerCep = String(formData.get("cep") ?? "").replace(/\D/g, "");
+  const deliveryType = String(formData.get("deliveryType") ?? "pickup") as
+    | "pickup"
     | "moto"
-    | "distribuicao";
-  const quantidade = Number(formData.get("quantidade") ?? 1);
+    | "distribution";
+  const quantity = Number(formData.get("quantity") ?? 1);
 
   if (!pharmacyId) return { ok: false, error: "Selecione uma farmácia." };
-  if (!productEan || cepCliente.length !== 8) {
+  if (!productEan || customerCep.length !== 8) {
     return { ok: false, error: "Informe CEP e produto válidos." };
   }
   const res = orderService.placeOrder({
     pharmacyId,
     productEan,
-    cepCliente,
-    tipoEntrega,
-    quantidade: Math.max(1, Math.floor(quantidade)),
+    customerCep,
+    deliveryType,
+    quantity: Math.max(1, Math.floor(quantity)),
   });
   if (!res.ok) return { ok: false, error: res.error };
-  revalidatePath("/medicamento/[ean]");
+  revalidatePath("/medicine/[ean]", "page");
+  revalidatePath("/");
   revalidatePath("/dashboard");
-  revalidatePath("/dashboard/pedidos");
+  revalidatePath("/dashboard/orders");
   return { ok: true, orderId: res.orderId };
 }
 
@@ -45,6 +46,6 @@ export async function advanceOrderAction(formData: FormData): Promise<void> {
   const orderId = String(formData.get("id") ?? "");
   if (!orderId) return;
   orderService.advance(orderId, session.pharmacyId);
-  revalidatePath("/dashboard/pedidos");
-  revalidatePath(`/pedido/${orderId}`);
+  revalidatePath("/dashboard/orders");
+  revalidatePath(`/order/${orderId}`);
 }

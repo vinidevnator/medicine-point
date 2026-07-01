@@ -16,11 +16,11 @@ export async function updateSettingsAction(_prev: SettingsState, formData: FormD
   const settings = pharmacyRepo.getSettings(session.pharmacyId);
   if (!settings) return { ok: false, error: "Configuração não encontrada." };
   const raw = {
-    cepBase: String(formData.get("cepBase") ?? ""),
-    raioKm: Number(formData.get("raioKm") ?? 10),
-    aceitaRetirada: formData.get("aceitaRetirada") === "on",
-    aceitaMoto: formData.get("aceitaMoto") === "on",
-    freteMoto: String(formData.get("freteMoto") ?? ""),
+    baseCep: String(formData.get("baseCep") ?? ""),
+    radiusKm: Number(formData.get("radiusKm") ?? 10),
+    acceptsPickup: formData.get("acceptsPickup") === "on",
+    acceptsMoto: formData.get("acceptsMoto") === "on",
+    motoShipping: String(formData.get("motoShipping") ?? ""),
   };
   const parsed = settingsSchema.safeParse(raw);
   if (!parsed.success) {
@@ -28,13 +28,13 @@ export async function updateSettingsAction(_prev: SettingsState, formData: FormD
   }
   const d = parsed.data;
   pharmacyRepo.updateSettings(session.pharmacyId, {
-    cepBase: d.cepBase,
-    raioKm: d.raioKm,
-    aceitaRetirada: d.aceitaRetirada,
-    aceitaMoto: d.aceitaMoto,
-    freteMotoCents: parseBRLToCents(d.freteMoto),
+    baseCep: d.baseCep,
+    radiusKm: d.radiusKm,
+    acceptsPickup: d.acceptsPickup,
+    acceptsMoto: d.acceptsMoto,
+    motoShippingCents: parseBRLToCents(d.motoShipping),
   });
-  revalidatePath("/dashboard/configuracoes");
+  revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard");
   return { ok: true };
 }
@@ -42,8 +42,8 @@ export async function updateSettingsAction(_prev: SettingsState, formData: FormD
 export async function updateAccountAction(_prev: SettingsState, formData: FormData): Promise<SettingsState> {
   const session = await requirePharmacy();
   const raw = {
-    razaoSocial: String(formData.get("razaoSocial") ?? ""),
-    nomeFantasia: String(formData.get("nomeFantasia") ?? ""),
+    legalName: String(formData.get("legalName") ?? ""),
+    tradeName: String(formData.get("tradeName") ?? ""),
     email: String(formData.get("email") ?? ""),
   };
   const parsed = accountSchema.safeParse(raw);
@@ -51,11 +51,11 @@ export async function updateAccountAction(_prev: SettingsState, formData: FormDa
     return { ok: false, error: "Verifique os dados.", fieldErrors: collect(parsed.error) };
   }
   pharmacyRepo.update(session.pharmacyId, {
-    razaoSocial: parsed.data.razaoSocial,
-    nomeFantasia: parsed.data.nomeFantasia,
+    legalName: parsed.data.legalName,
+    tradeName: parsed.data.tradeName,
     email: parsed.data.email,
   });
-  revalidatePath("/dashboard/conta");
+  revalidatePath("/dashboard/account");
   return { ok: true };
 }
 

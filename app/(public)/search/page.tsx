@@ -7,7 +7,7 @@ import { Chip } from "@/components/ui/chip";
 
 type SearchParams = Promise<{ q?: string; cat?: string }>;
 
-export default async function BuscaPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function SearchPage({ searchParams }: { searchParams: SearchParams }) {
   const { q, cat } = await searchParams;
   const query = (q ?? "").toLowerCase().trim();
   const category = cat ?? "";
@@ -16,7 +16,7 @@ export default async function BuscaPage({ searchParams }: { searchParams: Search
 
   if (query) {
     list = list.filter(
-      (p) => p.nome.toLowerCase().includes(query) || p.ean.includes(query)
+      (p) => p.name.toLowerCase().includes(query) || p.ean.includes(query)
     );
   }
   if (category) {
@@ -25,15 +25,15 @@ export default async function BuscaPage({ searchParams }: { searchParams: Search
 
   const products = list.map((d) => {
     const rows = productRepo.getByEanGlobal(d.ean);
-    const lowestPrice = rows.length > 0 ? Math.min(...rows.map((r) => r.precoCents)) : 0;
-    const totalStock = rows.reduce((sum, r) => sum + r.quantidade, 0);
+    const lowestPrice = rows.length > 0 ? Math.min(...rows.map((r) => r.priceCents)) : 0;
+    const totalStock = rows.reduce((sum, r) => sum + r.quantity, 0);
     return {
       ean: d.ean,
-      nome: d.nome,
-      descricao: d.descricao,
-      precoCents: lowestPrice,
+      name: d.name,
+      description: d.description,
+      priceCents: lowestPrice,
       imagePath: imageFor(d.ean),
-      quantidade: totalStock,
+      quantity: totalStock,
     };
   });
 
@@ -51,11 +51,11 @@ export default async function BuscaPage({ searchParams }: { searchParams: Search
       <p className="mt-1 text-body-sm text-muted-foreground">{products.length} produto(s) encontrado(s)</p>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        <Chip href="/busca" active={!category}>Todos</Chip>
+        <Chip href="/search" active={!category}>Todos</Chip>
         {CATEGORIES.map((c) => {
           const Icon = categoryIcon(c.slug);
           return (
-            <Chip key={c.slug} href={`/busca?cat=${c.slug}`} active={category === c.slug}>
+            <Chip key={c.slug} href={`/search?cat=${c.slug}`} active={category === c.slug}>
               <Icon className="size-3.5" aria-hidden /> {c.label}
             </Chip>
           );

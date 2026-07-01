@@ -14,9 +14,9 @@ export default async function DashboardPage() {
   const report = reportService.build(session.pharmacyId, "7d");
 
   const pieData = [
-    { name: "Retirada", value: report.porRetirada },
-    { name: "Moto", value: report.porMoto },
-    { name: "Distribuição", value: report.porDistribuicao },
+    { name: "Retirada", value: report.byPickup },
+    { name: "Moto", value: report.byMoto },
+    { name: "Distribuição", value: report.byDistribution },
   ].filter((d) => d.value > 0);
 
   const recent = orderRepo.listByPharmacy(session.pharmacyId).slice(0, 5);
@@ -30,27 +30,27 @@ export default async function DashboardPage() {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-        <Kpi label="Produtos cadastrados" value={kpis.produtosCadastrados} icon={Pill} />
-        <Kpi label="Vendidos hoje" value={kpis.vendidosHoje} icon={ShoppingCart} />
-        <Kpi label="Vendidos no mês" value={kpis.vendidosMes} icon={Calendar} />
-        <Kpi label="Aguardando retirada" value={kpis.aguardandoRetirada} icon={Package} />
-        <Kpi label="Pedidos por moto" value={kpis.pedidosMoto} icon={Bike} />
-        <Kpi label="Receita estimada" value={formatBRL(kpis.receitaEstimada)} icon={DollarSign} />
+        <Kpi label="Produtos cadastrados" value={kpis.registeredProducts} icon={Pill} />
+        <Kpi label="Vendidos hoje" value={kpis.soldToday} icon={ShoppingCart} />
+        <Kpi label="Vendidos no mês" value={kpis.soldThisMonth} icon={Calendar} />
+        <Kpi label="Aguardando retirada" value={kpis.awaitingPickup} icon={Package} />
+        <Kpi label="Pedidos por moto" value={kpis.motoOrders} icon={Bike} />
+        <Kpi label="Receita estimada" value={formatBRL(kpis.estimatedRevenue)} icon={DollarSign} />
       </div>
 
       {/* Charts */}
       <div className="grid gap-4 lg:grid-cols-3">
         <Card>
           <h2 className="mb-4 text-subtitle text-[16px] font-semibold">Vendas (7 dias)</h2>
-          {report.vendasPorDia.length > 0 ? (
-            <LineChartCard data={report.vendasPorDia} dataKey="quantidade" xKey="dia" label="Unidades" />
+          {report.salesByDay.length > 0 ? (
+            <LineChartCard data={report.salesByDay} dataKey="quantity" xKey="day" label="Unidades" />
           ) : <Empty />}
         </Card>
         <Card>
           <h2 className="mb-4 text-subtitle text-[16px] font-semibold">Receita por dia</h2>
           <BarChartCard
-            data={report.vendasPorDia.map((d) => ({ dia: d.dia, receita: Math.round(d.receitaCents / 100) }))}
-            dataKey="receita" xKey="dia" label="R$"
+            data={report.salesByDay.map((d) => ({ day: d.day, receita: Math.round(d.revenueCents / 100) }))}
+            dataKey="receita" xKey="day" label="R$"
           />
         </Card>
         <Card>
@@ -59,23 +59,23 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Top produtos */}
+      {/* Top products */}
       <Card>
         <h2 className="mb-4 text-subtitle text-[16px] font-semibold">Produtos mais vendidos</h2>
-        {report.topProdutos.length === 0 ? <Empty /> : (
+        {report.topProducts.length === 0 ? <Empty /> : (
           <ul className="divide-y divide-border">
-            {report.topProdutos.map((p, i) => (
+            {report.topProducts.map((p, i) => (
               <li key={p.ean} className="flex items-center justify-between py-3">
                 <div className="flex items-center gap-3">
                   <Badge tone="primary">{i + 1}º</Badge>
                   <div>
-                    <p className="text-body font-medium">{p.nome}</p>
+                    <p className="text-body font-medium">{p.name}</p>
                     <p className="text-caption text-muted-foreground">EAN {p.ean}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-body font-medium">{p.quantidade} un.</p>
-                  <p className="text-caption text-muted-foreground">{formatBRL(p.receitaCents)}</p>
+                  <p className="text-body font-medium">{p.quantity} un.</p>
+                  <p className="text-caption text-muted-foreground">{formatBRL(p.revenueCents)}</p>
                 </div>
               </li>
             ))}
@@ -83,11 +83,11 @@ export default async function DashboardPage() {
         )}
       </Card>
 
-      {/* Pedidos recentes */}
+      {/* Recent orders */}
       <Card>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-subtitle text-[16px] font-semibold">Pedidos recentes</h2>
-          <Link href="/dashboard/pedidos" className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline">
+          <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline">
             Ver todos <ArrowRight className="size-3.5" aria-hidden />
           </Link>
         </div>
@@ -95,10 +95,10 @@ export default async function DashboardPage() {
           <ul className="divide-y divide-border">
             {recent.map((o) => (
               <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
-                <Link href={`/pedido/${o.id}`} className="text-body font-medium hover:text-primary">#{o.id.slice(0, 8)}</Link>
-                <Badge tone={o.status === "finalizado" ? "success" : "primary"}>{o.status.replace("_", " ")}</Badge>
-                <span className="text-body-sm text-muted-foreground">{o.tipoEntrega}</span>
-                <span className="text-body font-medium">{formatBRL(o.precoTotalCents)}</span>
+                <Link href={`/order/${o.id}`} className="text-body font-medium hover:text-primary">#{o.id.slice(0, 8)}</Link>
+                <Badge tone={o.status === "completed" ? "success" : "primary"}>{o.status.replace("_", " ")}</Badge>
+                <span className="text-body-sm text-muted-foreground">{o.deliveryType}</span>
+                <span className="text-body font-medium">{formatBRL(o.totalPriceCents)}</span>
               </li>
             ))}
           </ul>

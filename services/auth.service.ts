@@ -14,6 +14,7 @@ const SEED_PRODUCTS = [
     precoCents: 3990,
     quantidade: 100,
     imagePath: "/img/med-respiratorio.svg",
+    category: "respiratorio" as const,
   },
   {
     ean: "7890000000002",
@@ -22,6 +23,7 @@ const SEED_PRODUCTS = [
     precoCents: 8990,
     quantidade: 80,
     imagePath: "/img/med-hipertensao.svg",
+    category: "cardio" as const,
   },
   {
     ean: "7890000000003",
@@ -30,6 +32,7 @@ const SEED_PRODUCTS = [
     precoCents: 1990,
     quantidade: 250,
     imagePath: "/img/med-febre.svg",
+    category: "analgesico" as const,
   },
 ] as const;
 
@@ -41,18 +44,18 @@ export const authService = {
   async register(formData: FormData): Promise<AuthResult> {
     const raw = {
       cnpj: String(formData.get("cnpj") ?? ""),
-      razaoSocial: String(formData.get("razaoSocial") ?? ""),
-      nomeFantasia: String(formData.get("nomeFantasia") ?? ""),
+      legalName: String(formData.get("legalName") ?? ""),
+      tradeName: String(formData.get("tradeName") ?? ""),
       email: String(formData.get("email") ?? ""),
-      senha: String(formData.get("senha") ?? ""),
+      password: String(formData.get("password") ?? ""),
       cep: String(formData.get("cep") ?? ""),
-      logradouro: String(formData.get("logradouro") ?? ""),
-      numero: String(formData.get("numero") ?? ""),
-      complemento: String(formData.get("complemento") ?? ""),
-      bairro: String(formData.get("bairro") ?? ""),
-      cidade: String(formData.get("cidade") ?? ""),
-      estado: String(formData.get("estado") ?? ""),
-      faturamento: String(formData.get("faturamento") ?? ""),
+      street: String(formData.get("street") ?? ""),
+      number: String(formData.get("number") ?? ""),
+      complement: String(formData.get("complement") ?? ""),
+      district: String(formData.get("district") ?? ""),
+      city: String(formData.get("city") ?? ""),
+      state: String(formData.get("state") ?? ""),
+      revenue: String(formData.get("revenue") ?? ""),
     };
 
     const parsed = registerSchema.safeParse(raw);
@@ -71,23 +74,23 @@ export const authService = {
 
     const pharmacyId = randomUUID();
     const userId = randomUUID();
-    const passwordHash = bcrypt.hashSync(d.senha, 10);
+    const passwordHash = bcrypt.hashSync(d.password, 10);
     const coords = CEP_INFO[d.cep] ?? { lat: -23.5616, lng: -46.6561 };
 
     pharmacyRepo.create({
       id: pharmacyId,
       cnpj: d.cnpj,
-      razaoSocial: d.razaoSocial,
-      nomeFantasia: d.nomeFantasia,
+      legalName: d.legalName,
+      tradeName: d.tradeName,
       email: d.email,
       cep: d.cep,
-      logradouro: d.logradouro,
-      numero: d.numero,
-      complemento: d.complemento ?? "",
-      bairro: d.bairro,
-      cidade: d.cidade,
-      estado: d.estado,
-      faturamento: d.faturamento,
+      street: d.street,
+      number: d.number,
+      complement: d.complement ?? "",
+      district: d.district,
+      city: d.city,
+      state: d.state,
+      revenue: d.revenue,
       lat: coords.lat,
       lng: coords.lng,
     });
@@ -95,11 +98,11 @@ export const authService = {
     pharmacyRepo.createSettings({
       id: randomUUID(),
       pharmacyId,
-      cepBase: d.cep,
-      raioKm: 10,
-      aceitaRetirada: true,
-      aceitaMoto: true,
-      freteMotoCents: 599,
+      baseCep: d.cep,
+      radiusKm: 10,
+      acceptsPickup: true,
+      acceptsMoto: true,
+      motoShippingCents: 599,
     });
 
     authRepo.createUser({
@@ -115,11 +118,12 @@ export const authService = {
         id: randomUUID(),
         pharmacyId,
         ean: p.ean,
-        nome: p.nome,
-        descricao: p.descricao,
-        precoCents: p.precoCents,
-        quantidade: p.quantidade,
+        name: p.nome,
+        description: p.descricao,
+        priceCents: p.precoCents,
+        quantity: p.quantidade,
         imagePath: p.imagePath,
+        category: p.category,
       });
     }
 
@@ -130,7 +134,7 @@ export const authService = {
   async login(formData: FormData): Promise<AuthResult> {
     const raw = {
       email: String(formData.get("email") ?? ""),
-      senha: String(formData.get("senha") ?? ""),
+      password: String(formData.get("password") ?? ""),
     };
     const parsed = loginSchema.safeParse(raw);
     if (!parsed.success) {
@@ -142,11 +146,11 @@ export const authService = {
     }
     const user = authRepo.findByEmail(parsed.data.email);
     if (!user || !user.pharmacyId) {
-      return { ok: false, error: "Credenciais inválidas.", fieldErrors: { senha: ["Credenciais inválidas"] } };
+      return { ok: false, error: "Credenciais inválidas.", fieldErrors: { password: ["Credenciais inválidas"] } };
     }
-    const ok = bcrypt.compareSync(parsed.data.senha, user.passwordHash);
+    const ok = bcrypt.compareSync(parsed.data.password, user.passwordHash);
     if (!ok) {
-      return { ok: false, error: "Credenciais inválidas.", fieldErrors: { senha: ["Credenciais inválidas"] } };
+      return { ok: false, error: "Credenciais inválidas.", fieldErrors: { password: ["Credenciais inválidas"] } };
     }
     await createSession({ userId: user.id, pharmacyId: user.pharmacyId, role: user.role });
     return { ok: true, pharmacyId: user.pharmacyId };

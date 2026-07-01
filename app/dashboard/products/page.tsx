@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ProductFormDialog, DeleteProductButton } from "@/components/dashboard/product-dialog";
 import { formatBRL } from "@/lib/format";
 
-export default async function ProdutosPage() {
+export default async function ProductsPage() {
   const session = await requirePharmacy();
   const products = productRepo.listByPharmacy(session.pharmacyId);
 
@@ -29,16 +29,16 @@ export default async function ProdutosPage() {
           {products.map((p) => (
             <Card key={p.id} className="flex flex-col gap-3">
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-muted">
-                <Image src={p.imagePath || "/img/med-generico.svg"} alt={p.nome} fill sizes="(max-width:768px) 100vw, 33vw" className="object-contain p-2" />
+                <Image src={p.imagePath || "/img/med-generico.svg"} alt={p.name} fill sizes="(max-width:768px) 100vw, 33vw" className="object-contain p-2" />
               </div>
               <div className="flex items-start justify-between gap-2">
-                <h3 className="text-body font-semibold leading-tight">{p.nome}</h3>
-                <Badge tone={p.quantidade > 0 ? "success" : "danger"}>{p.quantidade} un.</Badge>
+                <h3 className="text-body font-semibold leading-tight">{p.name}</h3>
+                <Badge tone={p.quantity > 0 ? "success" : "danger"}>{p.quantity} un.</Badge>
               </div>
-              <p className="line-clamp-2 text-body-sm text-muted-foreground">{p.descricao}</p>
+              <p className="line-clamp-2 text-body-sm text-muted-foreground">{p.description}</p>
               <div className="flex items-center justify-between text-body-sm text-muted-foreground">
                 <span>EAN {p.ean}</span>
-                <span className="text-[17px] font-bold text-foreground">{formatBRL(p.precoCents)}</span>
+                <span className="text-[17px] font-bold text-foreground">{formatBRL(p.priceCents)}</span>
               </div>
               <div className="flex gap-2 border-t border-border pt-3">
                 <ProductFormDialog
@@ -48,8 +48,8 @@ export default async function ProdutosPage() {
                   size="sm"
                   className="flex-1"
                   initial={{
-                    id: p.id, ean: p.ean, nome: p.nome, descricao: p.descricao,
-                    precoCents: p.precoCents, quantidade: p.quantidade, imagePath: p.imagePath,
+                    id: p.id, ean: p.ean, name: p.name, description: p.description,
+                    priceCents: p.priceCents, quantity: p.quantity, imagePath: p.imagePath,
                     category: p.category,
                   }}
                 />

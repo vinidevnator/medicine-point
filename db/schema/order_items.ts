@@ -12,8 +12,8 @@ export const orderItems = sqliteTable("order_items", {
     .notNull()
     .references(() => products.id, { onDelete: "restrict" }),
   ean: text("ean").notNull(),
-  nome: text("nome").notNull(),
-  precoUnitCents: integer("preco_unit_cents").notNull(),
-  quantidade: integer("quantidade").notNull(),
+  name: text("name").notNull(),
+  unitPriceCents: integer("unit_price_cents").notNull(),
+  quantity: integer("quantity").notNull(),
   ...timestamps,
 });

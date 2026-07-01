@@ -10,9 +10,9 @@ import { DC_PHARMACY_ID } from "@/lib/constants";
 export type PlaceOrderInput = {
   pharmacyId: string;
   productEan: string;
-  cepCliente: string;
-  tipoEntrega: "retirada" | "moto" | "distribuicao";
-  quantidade: number;
+  customerCep: string;
+  deliveryType: "pickup" | "moto" | "distribution";
+  quantity: number;
 };
 
 export type PlaceOrderResult =
@@ -31,10 +31,10 @@ function ensureDcStock(ean: string) {
     id: randomUUID(),
     pharmacyId: DC_PHARMACY_ID,
     ean: reference.ean,
-    nome: reference.nome,
-    descricao: reference.descricao,
-    precoCents: reference.precoCents,
-    quantidade: 999,
+    name: reference.name,
+    description: reference.description,
+    priceCents: reference.priceCents,
+    quantity: 999,
     imagePath: reference.imagePath,
   });
   return productRepo.getByPharmacyAndEan(DC_PHARMACY_ID, ean);
@@ -46,31 +46,31 @@ export const orderService = {
       input.pharmacyId === DC_PHARMACY_ID
         ? ensureDcStock(input.productEan)
         : productRepo.getByPharmacyAndEan(input.pharmacyId, input.productEan);
-    if (!productRow || productRow.quantidade < input.quantidade) {
+    if (!productRow || productRow.quantity < input.quantity) {
       return { ok: false, error: "Estoque insuficiente para o pedido." };
     }
-    const offerings = searchService.findByEanAndCep(input.productEan, input.cepCliente);
+    const offerings = searchService.findByEanAndCep(input.productEan, input.customerCep);
     const offering = offerings.find((o) => o.pharmacyId === input.pharmacyId);
-    const distance = offering?.distanciaKm ?? 5;
-    const est = searchService.estimateDelivery(input.tipoEntrega, distance);
-    const freteCents = input.tipoEntrega === "moto" ? (offering?.freteCents ?? est.freteCents) : est.freteCents;
+    const distance = offering?.distanceKm ?? 5;
+    const est = searchService.estimateDelivery(input.deliveryType, distance);
+    const shippingCents = input.deliveryType === "moto" ? (offering?.shippingCents ?? est.shippingCents) : est.shippingCents;
 
     const orderId = randomUUID();
-    const precoUnit = productRow.precoCents;
-    const precoTotal = precoUnit * input.quantidade + freteCents;
+    const unitPrice = productRow.priceCents;
+    const totalPrice = unitPrice * input.quantity + shippingCents;
     const now = new Date();
-    const etapa2 = new Date(now.getTime() + (est.tempoMin / 3) * 60 * 1000);
-    const etapa3 = new Date(now.getTime() + (est.tempoMin * (2 / 3)) * 60 * 1000);
+    const stage2 = new Date(now.getTime() + (est.timeMin / 3) * 60 * 1000);
+    const stage3 = new Date(now.getTime() + (est.timeMin * (2 / 3)) * 60 * 1000);
 
     try {
       db.transaction((tx) => {
         const decremented = tx
           .update(products)
           .set({
-            quantidade: sql`${products.quantidade} - ${input.quantidade}`,
+            quantity: sql`${products.quantity} - ${input.quantity}`,
             updatedAt: now,
           })
-          .where(and(eq(products.id, productRow.id), gte(products.quantidade, input.quantidade)))
+          .where(and(eq(products.id, productRow.id), gte(products.quantity, input.quantity)))
           .run();
         if (decremented.changes === 0) throw new Error(OUT_OF_STOCK);
 
@@ -78,16 +78,16 @@ export const orderService = {
           .values({
             id: orderId,
             pharmacyId: input.pharmacyId,
-            cepCliente: input.cepCliente,
-            tipoEntrega: input.tipoEntrega,
-            status: "liberado",
-            precoTotalCents: precoTotal,
-            freteCents,
-            distanciaKm: distance,
-            tempoEstimadoMin: est.tempoMin,
-            etapa1At: now,
-            etapa2At: input.tipoEntrega === "retirada" ? etapa2 : null,
-            etapa3At: input.tipoEntrega === "retirada" ? etapa3 : null,
+            customerCep: input.customerCep,
+            deliveryType: input.deliveryType,
+            status: "released",
+            totalPriceCents: totalPrice,
+            shippingCents: shippingCents,
+            distanceKm: distance,
+            estimatedTimeMin: est.timeMin,
+            stage1At: now,
+            stage2At: input.deliveryType === "pickup" ? stage2 : null,
+            stage3At: input.deliveryType === "pickup" ? stage3 : null,
           })
           .run();
         tx.insert(orderItems)
@@ -96,9 +96,9 @@ export const orderService = {
             orderId,
             productId: productRow.id,
             ean: productRow.ean,
-            nome: productRow.nome,
-            precoUnitCents: precoUnit,
-            quantidade: input.quantidade,
+            name: productRow.name,
+            unitPriceCents: unitPrice,
+            quantity: input.quantity,
           })
           .run();
       });
@@ -117,16 +117,16 @@ export const orderService = {
     if (!detail) return;
     const order = detail.order;
     if (order.pharmacyId !== pharmacyId) return;
-    const next: Record<string, "montado" | "pronto_coleta" | "finalizado"> = {
-      liberado: "montado",
-      montado: "pronto_coleta",
-      pronto_coleta: "finalizado",
-      finalizado: "finalizado",
+    const next: Record<string, "assembled" | "ready_pickup" | "completed"> = {
+      released: "assembled",
+      assembled: "ready_pickup",
+      ready_pickup: "completed",
+      completed: "completed",
     };
-    const ns = next[order.status] ?? "finalizado";
+    const ns = next[order.status] ?? "completed";
     const patch: Partial<typeof orders.$inferInsert> = { status: ns, updatedAt: new Date() };
-    if (ns === "montado" && !order.etapa2At) patch.etapa2At = new Date();
-    if (ns === "pronto_coleta") patch.etapa3At = new Date();
+    if (ns === "assembled" && !order.stage2At) patch.stage2At = new Date();
+    if (ns === "ready_pickup") patch.stage3At = new Date();
     db.update(orders).set(patch).where(eq(orders.id, orderId)).run();
   },
 };

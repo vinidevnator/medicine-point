@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { parseBRLToCents } from "@/lib/format";
 import { onlyDigits } from "@/lib/masks";
-import { CATEGORIES, ESTADOS_BR, FATURAMENTO_OPCOES } from "@/lib/constants";
+import { CATEGORIES, BR_STATES, REVENUE_OPTIONS } from "@/lib/constants";
 
 const cnpjRegex = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
 const cepRegex = /^\d{5}-\d{3}$/;
@@ -31,25 +31,25 @@ export const registerSchema = z.object({
     .string()
     .regex(cnpjRegex, { error: "CNPJ inválido" })
     .refine(isValidCNPJ, { error: "CNPJ inválido" }),
-  razaoSocial: z.string().trim().min(3, { error: "Informe a razão social" }),
-  nomeFantasia: z.string().trim().min(2, { error: "Informe o nome fantasia" }),
+  legalName: z.string().trim().min(3, { error: "Informe a razão social" }),
+  tradeName: z.string().trim().min(2, { error: "Informe o nome fantasia" }),
   email: z.email({ error: "E-mail inválido" }),
-  senha: z
+  password: z
     .string()
     .min(8, { error: "A senha deve ter no mínimo 8 caracteres" }),
   cep: z.string().regex(cepRegex, { error: "CEP inválido" }),
-  logradouro: z.string().trim().min(3, { error: "Endereço obrigatório" }),
-  numero: z.string().trim().min(1, { error: "Número obrigatório" }),
-  complemento: z.string().optional().default(""),
-  bairro: z.string().trim().min(2, { error: "Bairro obrigatório" }),
-  cidade: z.string().trim().min(2, { error: "Cidade obrigatória" }),
-  estado: z.enum(ESTADOS_BR.map((e) => e.value) as [string, ...string[]], {
+  street: z.string().trim().min(3, { error: "Endereço obrigatório" }),
+  number: z.string().trim().min(1, { error: "Número obrigatório" }),
+  complement: z.string().optional().default(""),
+  district: z.string().trim().min(2, { error: "Bairro obrigatório" }),
+  city: z.string().trim().min(2, { error: "Cidade obrigatória" }),
+  state: z.enum(BR_STATES.map((e) => e.value) as [string, ...string[]], {
     error: "Selecione um estado válido",
   }),
-  faturamento: z.enum(
-    FATURAMENTO_OPCOES.map((o) => o.value) as [
-      (typeof FATURAMENTO_OPCOES)[number]["value"],
-      ...(typeof FATURAMENTO_OPCOES)[number]["value"][],
+  revenue: z.enum(
+    REVENUE_OPTIONS.map((o) => o.value) as [
+      (typeof REVENUE_OPTIONS)[number]["value"],
+      ...(typeof REVENUE_OPTIONS)[number]["value"][],
     ],
     { error: "Selecione o faturamento" }
   ),
@@ -57,18 +57,18 @@ export const registerSchema = z.object({
 
 export const loginSchema = z.object({
   email: z.email({ error: "E-mail inválido" }),
-  senha: z.string().min(1, { error: "Informe a senha" }),
+  password: z.string().min(1, { error: "Informe a senha" }),
 });
 
 export const productSchema = z.object({
   ean: z.string().regex(eanRegex, { error: "EAN deve ter 13 dígitos" }),
-  nome: z.string().min(3, { error: "Informe o nome" }),
-  descricao: z.string().min(3, { error: "Informe a descrição" }),
-  preco: z
+  name: z.string().min(3, { error: "Informe o nome" }),
+  description: z.string().min(3, { error: "Informe a descrição" }),
+  price: z
     .string()
     .min(1, { error: "Preço inválido" })
     .refine((v) => parseBRLToCents(v) > 0, { error: "Informe um preço válido maior que zero" }),
-  quantidade: z
+  quantity: z
     .string()
     .min(1, { error: "Quantidade inválida" })
     .refine((v) => onlyDigits(v).length > 0, { error: "Quantidade deve conter apenas números" }),
@@ -77,16 +77,16 @@ export const productSchema = z.object({
 });
 
 export const settingsSchema = z.object({
-  cepBase: z.string().regex(cepRegex, { error: "CEP inválido" }),
-  raioKm: z.number().int().min(1).max(50),
-  aceitaRetirada: z.boolean(),
-  aceitaMoto: z.boolean(),
-  freteMoto: z.string().min(1, { error: "Frete inválido" }),
+  baseCep: z.string().regex(cepRegex, { error: "CEP inválido" }),
+  radiusKm: z.number().int().min(1).max(50),
+  acceptsPickup: z.boolean(),
+  acceptsMoto: z.boolean(),
+  motoShipping: z.string().min(1, { error: "Frete inválido" }),
 });
 
 export const accountSchema = z.object({
-  razaoSocial: z.string().min(3, { error: "Razão social obrigatória" }),
-  nomeFantasia: z.string().min(2, { error: "Nome fantasia obrigatório" }),
+  legalName: z.string().min(3, { error: "Razão social obrigatória" }),
+  tradeName: z.string().min(2, { error: "Nome fantasia obrigatório" }),
   email: z.email({ error: "E-mail inválido" }),
 });
 

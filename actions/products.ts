@@ -17,10 +17,10 @@ export async function createProductAction(_prev: ProductState, formData: FormDat
   const session = await requirePharmacy();
   const raw = {
     ean: String(formData.get("ean") ?? ""),
-    nome: String(formData.get("nome") ?? ""),
-    descricao: String(formData.get("descricao") ?? ""),
-    preco: String(formData.get("preco") ?? ""),
-    quantidade: String(formData.get("quantidade") ?? ""),
+    name: String(formData.get("name") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    price: String(formData.get("price") ?? ""),
+    quantity: String(formData.get("quantity") ?? ""),
     imagePath: String(formData.get("imagePath") ?? ""),
     category: String(formData.get("category") ?? ""),
   };
@@ -36,18 +36,25 @@ export async function createProductAction(_prev: ProductState, formData: FormDat
   if (productRepo.getByPharmacyAndEan(session.pharmacyId, d.ean)) {
     return { ok: false, error: "EAN já cadastrado.", fieldErrors: { ean: ["EAN já cadastrado"] } };
   }
-  productRepo.create({
-    id: randomUUID(),
-    pharmacyId: session.pharmacyId,
-    ean: d.ean,
-    nome: d.nome,
-    descricao: d.descricao,
-    precoCents: parseBRLToCents(d.preco),
-    quantidade: Number(onlyDigits(d.quantidade)),
-    imagePath: d.imagePath || `/img/med-generico.svg`,
-    category: d.category,
-  });
-  revalidatePath("/dashboard/produtos");
+  try {
+    productRepo.create({
+      id: randomUUID(),
+      pharmacyId: session.pharmacyId,
+      ean: d.ean,
+      name: d.name,
+      description: d.description,
+      priceCents: parseBRLToCents(d.price),
+      quantity: Number(onlyDigits(d.quantity)),
+      imagePath: d.imagePath || `/img/med-generico.svg`,
+      category: d.category,
+    });
+  } catch (err) {
+    if (isUniqueEanError(err)) {
+      return { ok: false, error: "EAN já cadastrado.", fieldErrors: { ean: ["EAN já cadastrado"] } };
+    }
+    throw err;
+  }
+  revalidateProductPages();
   return { ok: true };
 }
 
@@ -56,10 +63,10 @@ export async function updateProductAction(_prev: ProductState, formData: FormDat
   const id = String(formData.get("id") ?? "");
   const raw = {
     ean: String(formData.get("ean") ?? ""),
-    nome: String(formData.get("nome") ?? ""),
-    descricao: String(formData.get("descricao") ?? ""),
-    preco: String(formData.get("preco") ?? ""),
-    quantidade: String(formData.get("quantidade") ?? ""),
+    name: String(formData.get("name") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    price: String(formData.get("price") ?? ""),
+    quantity: String(formData.get("quantity") ?? ""),
     imagePath: String(formData.get("imagePath") ?? ""),
     category: String(formData.get("category") ?? ""),
   };
@@ -72,16 +79,23 @@ export async function updateProductAction(_prev: ProductState, formData: FormDat
     return { ok: false, error: "Produto não encontrado." };
   }
   const d = parsed.data;
-  productRepo.update(id, {
-    ean: d.ean,
-    nome: d.nome,
-    descricao: d.descricao,
-    precoCents: parseBRLToCents(d.preco),
-    quantidade: Number(onlyDigits(d.quantidade)),
-    imagePath: d.imagePath || product.imagePath,
-    category: d.category,
-  });
-  revalidatePath("/dashboard/produtos");
+  try {
+    productRepo.update(id, {
+      ean: d.ean,
+      name: d.name,
+      description: d.description,
+      priceCents: parseBRLToCents(d.price),
+      quantity: Number(onlyDigits(d.quantity)),
+      imagePath: d.imagePath || product.imagePath,
+      category: d.category,
+    });
+  } catch (err) {
+    if (isUniqueEanError(err)) {
+      return { ok: false, error: "EAN já cadastrado.", fieldErrors: { ean: ["EAN já cadastrado"] } };
+    }
+    throw err;
+  }
+  revalidateProductPages();
   return { ok: true };
 }
 
@@ -91,7 +105,20 @@ export async function deleteProductAction(formData: FormData): Promise<void> {
   const product = productRepo.getById(id);
   if (!product || product.pharmacyId !== session.pharmacyId) return;
   productRepo.delete(id);
-  revalidatePath("/dashboard/produtos");
+  revalidateProductPages();
+}
+
+function revalidateProductPages(): void {
+  revalidatePath("/dashboard/products");
+  revalidatePath("/medicine/[ean]", "page");
+  revalidatePath("/");
+}
+
+function isUniqueEanError(err: unknown): boolean {
+  return (
+    err instanceof Error &&
+    /UNIQUE constraint failed: products\.(pharmacy_id|ean)/.test(err.message)
+  );
 }
 
 function collect(error: import("zod").ZodError): Record<string, string[]> {

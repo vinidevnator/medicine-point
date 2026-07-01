@@ -8,19 +8,23 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+// Reads live DB state (featured products, active-pharmacy count); must not be
+// frozen at build time.
+export const dynamic = "force-dynamic";
+
 export default function HomePage() {
   const distinct = productRepo.listDistinctEans();
   const featured = distinct.slice(0, 6).map((d) => {
     const rows = productRepo.getByEanGlobal(d.ean);
-    const lowestPrice = rows.length > 0 ? Math.min(...rows.map((r) => r.precoCents)) : 0;
-    const totalStock = rows.reduce((sum, r) => sum + r.quantidade, 0);
+    const lowestPrice = rows.length > 0 ? Math.min(...rows.map((r) => r.priceCents)) : 0;
+    const totalStock = rows.reduce((sum, r) => sum + r.quantity, 0);
     return {
       ean: d.ean,
-      nome: d.nome,
-      descricao: d.descricao,
-      precoCents: lowestPrice,
+      name: d.name,
+      description: d.description,
+      priceCents: lowestPrice,
       imagePath: imageFor(d.ean),
-      quantidade: totalStock,
+      quantity: totalStock,
     };
   });
   const pharmacies = pharmacyRepo.allWithSettings().filter((p) => p.pharmacy.id !== DC_PHARMACY_ID);
@@ -43,11 +47,11 @@ export default function HomePage() {
               Compare preços em farmácias próximas, escolha a retirada ou a entrega mais rápida e finalize em segundos.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/busca"><Button size="lg">Buscar medicamentos</Button></Link>
-              <Link href="/cadastrar"><Button size="lg" variant="secondary">Cadastrar minha farmácia</Button></Link>
+              <Link href="/search"><Button size="lg">Buscar medicamentos</Button></Link>
+              <Link href="/register"><Button size="lg" variant="secondary">Cadastrar minha farmácia</Button></Link>
             </div>
           </div>
-          <form action="/busca" role="search">
+          <form action="/search" role="search">
             <Card className="shadow-popover">
               <label htmlFor="q" className="mb-2 block text-label text-foreground">
                 Busque por nome ou EAN
@@ -64,7 +68,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categorias */}
+      {/* Categories */}
       <section className="mx-auto max-w-7xl px-4 py-14 md:px-6">
         <h2 className="mb-6 text-[28px] font-bold">Categorias</h2>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6">
@@ -73,7 +77,7 @@ export default function HomePage() {
             return (
               <Link
                 key={cat.slug}
-                href={`/busca?cat=${cat.slug}`}
+                href={`/search?cat=${cat.slug}`}
                 className="group flex flex-col items-center gap-3 rounded-lg border border-border bg-card p-5 text-center transition-colors duration-150 hover:border-primary/40 hover:bg-soft-pink"
               >
                 <span className="inline-flex size-11 items-center justify-center rounded-pill bg-soft-pink text-primary transition-colors duration-150 group-hover:bg-primary group-hover:text-primary-foreground">
@@ -86,11 +90,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Produtos em destaque */}
+      {/* Featured products */}
       <section className="mx-auto max-w-7xl px-4 py-8 md:px-6">
         <div className="mb-6 flex items-end justify-between">
           <h2 className="text-[28px] font-bold">Produtos em destaque</h2>
-          <Link href="/busca" className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline">
+          <Link href="/search" className="inline-flex items-center gap-1 text-body-sm font-medium text-primary hover:underline">
             Ver todos <ArrowRight className="size-4" aria-hidden />
           </Link>
         </div>
@@ -107,7 +111,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* Farmácias próximas CTA */}
+      {/* Nearby pharmacies CTA */}
       <section className="border-t border-border bg-muted">
         <div className="mx-auto max-w-7xl px-4 py-14 md:px-6">
           <div className="rounded-xl bg-primary p-8 text-primary-foreground md:p-12">
@@ -115,7 +119,7 @@ export default function HomePage() {
             <p className="mt-2 max-w-lg text-body opacity-90">
               Cadastre-se, configure seu raio de atendimento e comece a atender pedidos locais usando seu próprio estoque.
             </p>
-            <Link href="/cadastrar" className="mt-5 inline-block">
+            <Link href="/register" className="mt-5 inline-block">
               <Button variant="secondary" size="lg">Quero vender</Button>
             </Link>
           </div>

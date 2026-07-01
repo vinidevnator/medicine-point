@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { decrypt, SESSION_COOKIE } from "@/lib/session";
 
-const AUTH_ROUTES = new Set(["/entrar", "/cadastrar"]);
+const AUTH_ROUTES = new Set(["/login", "/register"]);
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   const session = await decrypt(request.cookies.get(SESSION_COOKIE)?.value);
 
   if (pathname.startsWith("/dashboard") && !session) {
-    return NextResponse.redirect(new URL("/entrar", request.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   if (AUTH_ROUTES.has(pathname) && session) {
@@ -20,5 +20,5 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/entrar", "/cadastrar"],
+  matcher: ["/dashboard/:path*", "/login", "/register"],
 };

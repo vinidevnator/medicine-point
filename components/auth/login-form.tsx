@@ -20,14 +20,14 @@ export function LoginForm() {
       <Field label="E-mail" htmlFor="email" error={state.fieldErrors?.email}>
         <Input id="email" name="email" type="email" autoComplete="email" required invalid={!!state.fieldErrors?.email} />
       </Field>
-      <Field label="Senha" htmlFor="senha" error={state.fieldErrors?.senha}>
-        <Input id="senha" name="senha" type="password" autoComplete="current-password" required invalid={!!state.fieldErrors?.senha} />
+      <Field label="Senha" htmlFor="password" error={state.fieldErrors?.password}>
+        <Input id="password" name="password" type="password" autoComplete="current-password" required invalid={!!state.fieldErrors?.password} />
       </Field>
       <Button type="submit" size="lg" className="w-full" loading={pending}>
         {pending ? "Entrando…" : "Entrar"}
       </Button>
       <p className="text-center text-body-sm text-muted-foreground">
-        Não tem conta? <Link href="/cadastrar" className="font-medium text-primary hover:underline">Cadastrar farmácia</Link>
+        Não tem conta? <Link href="/register" className="font-medium text-primary hover:underline">Cadastrar farmácia</Link>
       </p>
       <p className="rounded-lg bg-muted px-3.5 py-2.5 text-center text-caption text-muted-foreground">
         Demo: <strong>demo@medicinepoint.com.br</strong> / <strong>demo12345</strong>

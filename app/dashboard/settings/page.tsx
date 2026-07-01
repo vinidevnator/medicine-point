@@ -3,7 +3,7 @@ import { pharmacyRepo } from "@/repositories";
 import { Card } from "@/components/ui/card";
 import { SettingsForm } from "@/components/dashboard/settings-form";
 
-export default async function ConfiguracoesPage() {
+export default async function SettingsPage() {
   const session = await requirePharmacy();
   const settings = pharmacyRepo.getSettings(session.pharmacyId);
 
@@ -18,11 +18,11 @@ export default async function ConfiguracoesPage() {
       <Card>
         <SettingsForm
           initial={{
-            cepBase: settings.cepBase,
-            raioKm: settings.raioKm,
-            aceitaRetirada: settings.aceitaRetirada,
-            aceitaMoto: settings.aceitaMoto,
-            freteMotoCents: settings.freteMotoCents,
+            baseCep: settings.baseCep,
+            radiusKm: settings.radiusKm,
+            acceptsPickup: settings.acceptsPickup,
+            acceptsMoto: settings.acceptsMoto,
+            motoShippingCents: settings.motoShippingCents,
           }}
         />
       </Card>

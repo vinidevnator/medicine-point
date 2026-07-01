@@ -3,26 +3,26 @@ import { Chip } from "@/components/ui/chip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const OPTIONS: Array<{ value: "hoje" | "ontem" | "7d" | "30d" | "custom"; label: string }> = [
-  { value: "hoje", label: "Hoje" },
-  { value: "ontem", label: "Ontem" },
+const OPTIONS: Array<{ value: "today" | "yesterday" | "7d" | "30d" | "custom"; label: string }> = [
+  { value: "today", label: "Hoje" },
+  { value: "yesterday", label: "Ontem" },
   { value: "7d", label: "Últimos 7 dias" },
   { value: "30d", label: "Últimos 30 dias" },
   { value: "custom", label: "Personalizado" },
 ];
 
-export function ReportFilters({ current }: { current: "hoje" | "ontem" | "7d" | "30d" | "custom" }) {
+export function ReportFilters({ current }: { current: "today" | "yesterday" | "7d" | "30d" | "custom" }) {
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-center">
       <div className="flex flex-wrap gap-2">
         {OPTIONS.map((o) => (
-          <Chip key={o.value} href={`/dashboard/relatorios?f=${o.value}`} active={current === o.value}>
+          <Chip key={o.value} href={`/dashboard/reports?f=${o.value}`} active={current === o.value}>
             {o.label}
           </Chip>
         ))}
       </div>
       {current === "custom" && (
-        <form action="/dashboard/relatorios" method="GET" className="flex flex-wrap items-end gap-2">
+        <form action="/dashboard/reports" method="GET" className="flex flex-wrap items-end gap-2">
           <input type="hidden" name="f" value="custom" />
           <label className="text-caption text-muted-foreground">
             De

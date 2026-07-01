@@ -1,53 +1,53 @@
 import "server-only";
 
 export type WeatherSnapshot = {
-  cidade: string;
-  condicao: string;
-  temperaturaC: number | null;
-  precipitacaoMm: number | null;
-  ventoKmh: number | null;
-  chuvaForte: boolean;
+  city: string;
+  condition: string;
+  temperatureC: number | null;
+  precipitationMm: number | null;
+  windKmh: number | null;
+  heavyRain: boolean;
 };
 
-const FALLBACK: Omit<WeatherSnapshot, "cidade"> = {
-  condicao: "indisponível",
-  temperaturaC: null,
-  precipitacaoMm: null,
-  ventoKmh: null,
-  chuvaForte: false,
+const FALLBACK: Omit<WeatherSnapshot, "city"> = {
+  condition: "indisponível",
+  temperatureC: null,
+  precipitationMm: null,
+  windKmh: null,
+  heavyRain: false,
 };
 
 // WMO weather codes (used by Open-Meteo) mapped to short pt-BR labels.
 // Codes >= 63 with meaningful precipitation are treated as a risk factor for moto delivery.
-const WMO_LABELS: Record<number, { label: string; chuvaForte: boolean }> = {
-  0: { label: "céu limpo", chuvaForte: false },
-  1: { label: "poucas nuvens", chuvaForte: false },
-  2: { label: "parcialmente nublado", chuvaForte: false },
-  3: { label: "nublado", chuvaForte: false },
-  45: { label: "neblina", chuvaForte: false },
-  48: { label: "neblina com geada", chuvaForte: false },
-  51: { label: "garoa fraca", chuvaForte: false },
-  53: { label: "garoa moderada", chuvaForte: false },
-  55: { label: "garoa forte", chuvaForte: true },
-  56: { label: "garoa congelante fraca", chuvaForte: false },
-  57: { label: "garoa congelante forte", chuvaForte: true },
-  61: { label: "chuva fraca", chuvaForte: false },
-  63: { label: "chuva moderada", chuvaForte: true },
-  65: { label: "chuva forte", chuvaForte: true },
-  66: { label: "chuva congelante fraca", chuvaForte: false },
-  67: { label: "chuva congelante forte", chuvaForte: true },
-  71: { label: "neve fraca", chuvaForte: false },
-  73: { label: "neve moderada", chuvaForte: true },
-  75: { label: "neve forte", chuvaForte: true },
-  77: { label: "grãos de neve", chuvaForte: false },
-  80: { label: "pancadas de chuva fracas", chuvaForte: false },
-  81: { label: "pancadas de chuva moderadas", chuvaForte: true },
-  82: { label: "pancadas de chuva violentas", chuvaForte: true },
-  85: { label: "pancadas de neve fracas", chuvaForte: false },
-  86: { label: "pancadas de neve fortes", chuvaForte: true },
-  95: { label: "tempestade com trovoadas", chuvaForte: true },
-  96: { label: "tempestade com granizo leve", chuvaForte: true },
-  99: { label: "tempestade com granizo forte", chuvaForte: true },
+const WMO_LABELS: Record<number, { label: string; heavyRain: boolean }> = {
+  0: { label: "céu limpo", heavyRain: false },
+  1: { label: "poucas nuvens", heavyRain: false },
+  2: { label: "parcialmente nublado", heavyRain: false },
+  3: { label: "nublado", heavyRain: false },
+  45: { label: "neblina", heavyRain: false },
+  48: { label: "neblina com geada", heavyRain: false },
+  51: { label: "garoa fraca", heavyRain: false },
+  53: { label: "garoa moderada", heavyRain: false },
+  55: { label: "garoa forte", heavyRain: true },
+  56: { label: "garoa congelante fraca", heavyRain: false },
+  57: { label: "garoa congelante forte", heavyRain: true },
+  61: { label: "chuva fraca", heavyRain: false },
+  63: { label: "chuva moderada", heavyRain: true },
+  65: { label: "chuva forte", heavyRain: true },
+  66: { label: "chuva congelante fraca", heavyRain: false },
+  67: { label: "chuva congelante forte", heavyRain: true },
+  71: { label: "neve fraca", heavyRain: false },
+  73: { label: "neve moderada", heavyRain: true },
+  75: { label: "neve forte", heavyRain: true },
+  77: { label: "grãos de neve", heavyRain: false },
+  80: { label: "pancadas de chuva fracas", heavyRain: false },
+  81: { label: "pancadas de chuva moderadas", heavyRain: true },
+  82: { label: "pancadas de chuva violentas", heavyRain: true },
+  85: { label: "pancadas de neve fracas", heavyRain: false },
+  86: { label: "pancadas de neve fortes", heavyRain: true },
+  95: { label: "tempestade com trovoadas", heavyRain: true },
+  96: { label: "tempestade com granizo leve", heavyRain: true },
+  99: { label: "tempestade com granizo forte", heavyRain: true },
 };
 
 type GeocodeResult = { latitude: number; longitude: number; admin1?: string; name: string };
@@ -74,11 +74,11 @@ async function geocode(cidade: string, estado: string): Promise<GeocodeResult | 
 
 /** Fetches real-time weather conditions for a city, used to weigh moto-delivery risk. */
 export const weatherService = {
-  async getCurrentWeather(cidade: string, estado: string): Promise<WeatherSnapshot> {
-    if (!cidade) return { cidade: "", ...FALLBACK };
+  async getCurrentWeather(city: string, state: string): Promise<WeatherSnapshot> {
+    if (!city) return { city: "", ...FALLBACK };
     try {
-      const place = await geocode(cidade, estado);
-      if (!place) return { cidade, ...FALLBACK };
+      const place = await geocode(city, state);
+      if (!place) return { city, ...FALLBACK };
 
       const url = new URL("https://api.open-meteo.com/v1/forecast");
       url.searchParams.set("latitude", String(place.latitude));
@@ -86,7 +86,7 @@ export const weatherService = {
       url.searchParams.set("current", "temperature_2m,precipitation,weather_code,wind_speed_10m");
       url.searchParams.set("timezone", "auto");
       const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) return { cidade, ...FALLBACK };
+      if (!res.ok) return { city, ...FALLBACK };
       const json = (await res.json()) as {
         current?: {
           temperature_2m?: number;
@@ -96,18 +96,18 @@ export const weatherService = {
         };
       };
       const current = json.current;
-      if (!current) return { cidade, ...FALLBACK };
+      if (!current) return { city, ...FALLBACK };
       const wmo = WMO_LABELS[current.weather_code ?? -1];
       return {
-        cidade,
-        condicao: wmo?.label ?? "condição desconhecida",
-        temperaturaC: current.temperature_2m ?? null,
-        precipitacaoMm: current.precipitation ?? null,
-        ventoKmh: current.wind_speed_10m ?? null,
-        chuvaForte: wmo?.chuvaForte ?? false,
+        city,
+        condition: wmo?.label ?? "condição desconhecida",
+        temperatureC: current.temperature_2m ?? null,
+        precipitationMm: current.precipitation ?? null,
+        windKmh: current.wind_speed_10m ?? null,
+        heavyRain: wmo?.heavyRain ?? false,
       };
     } catch {
-      return { cidade, ...FALLBACK };
+      return { city, ...FALLBACK };
     }
   },
 };

@@ -49,7 +49,28 @@ export function parseDateInputToUnix(value: string): number | null {
   return Math.floor(ms / 1000);
 }
 
-export function tempoLabel(min: number): string {
+// Brazil (America/Sao_Paulo) has no DST since 2019, so a fixed UTC-3 offset is
+// safe. Timestamps are stored as UTC unix seconds; computing day boundaries in a
+// fixed zone (instead of the server's local zone) avoids off-by-one drift near
+// midnight when the server runs in a different timezone.
+const BRT_OFFSET_MS = -3 * 60 * 60 * 1000;
+
+/** Start-of-day (00:00 BRT) for the given instant, as UTC unix seconds. */
+export function startOfDayUnix(date: Date = new Date()): number {
+  const wall = new Date(date.getTime() + BRT_OFFSET_MS);
+  wall.setUTCHours(0, 0, 0, 0);
+  return Math.floor((wall.getTime() - BRT_OFFSET_MS) / 1000);
+}
+
+/** Start-of-month (00:00 BRT on the 1st) for the given instant, as UTC unix seconds. */
+export function startOfMonthUnix(date: Date = new Date()): number {
+  const wall = new Date(date.getTime() + BRT_OFFSET_MS);
+  wall.setUTCDate(1);
+  wall.setUTCHours(0, 0, 0, 0);
+  return Math.floor((wall.getTime() - BRT_OFFSET_MS) / 1000);
+}
+
+export function timeLabel(min: number): string {
   if (min < 60) return `${min} min`;
   const h = Math.floor(min / 60);
   const m = min % 60;

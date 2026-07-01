@@ -1,28 +1,28 @@
 import "server-only";
-import { Agent, run, tool, setDefaultOpenAIKey } from "@openai/agents";
+import { Agent, run, setDefaultOpenAIKey } from "@openai/agents";
 import { z } from "zod";
 import { searchService, type PharmacyOffering } from "./search.service";
-import { weatherService } from "./weather.service";
+import { weatherService, type WeatherSnapshot } from "./weather.service";
 
 export type DeliveryOption = {
   pharmacyId: string;
-  nomeFantasia: string;
-  tipo: "retirada" | "moto" | "distribuicao";
-  precoTotalCents: number;
-  tempoEstimadoMin: number;
+  tradeName: string;
+  type: "pickup" | "moto" | "distribution";
+  totalPriceCents: number;
+  estimatedTimeMin: number;
 };
 
 const RecommendationSchema = z.object({
-  melhorOpcao: z.enum(["retirada", "moto", "distribuicao"]),
+  bestOption: z.enum(["pickup", "moto", "distribution"]),
   pharmacyId: z.string(),
-  resumo: z.string().describe("Uma frase curta em português (pt-BR) resumindo a recomendação."),
-  justificativa: z
+  summary: z.string().describe("Uma frase curta em português (pt-BR) resumindo a recomendação."),
+  rationale: z
     .string()
     .describe("Parágrafo curto em português explicando por que essa opção é a melhor, considerando preço e tempo."),
-  climaConsiderado: z
+  weatherConsidered: z
     .string()
     .describe("Explicação breve em português de como o clima atual influenciou (ou não) a recomendação."),
-  alertaClima: z.boolean().describe("true se o clima representa um risco real para a moto entrega."),
+  weatherAlert: z.boolean().describe("true se o clima representa um risco real para a moto entrega."),
 });
 
 export type DeliveryRecommendation = z.infer<typeof RecommendationSchema>;
@@ -33,57 +33,43 @@ export type AdvisorResult =
 
 /**
  * Flattens pharmacy offerings into one comparable option per delivery method.
- * `PharmacyOffering.tempoEstimadoMin`/`freteCents` are collapsed to the fastest
+ * `PharmacyOffering.estimatedTimeMin`/`shippingCents` are collapsed to the fastest
  * available method for that pharmacy, so each method's own time/fee is recomputed
  * via `searchService.estimateDelivery` for an accurate side-by-side comparison.
  */
 function buildOptions(offerings: PharmacyOffering[]): DeliveryOption[] {
   const options: DeliveryOption[] = [];
   for (const o of offerings) {
-    for (const tipo of o.tiposEntrega) {
-      const est = searchService.estimateDelivery(tipo, o.distanciaKm);
-      const frete = tipo === "moto" ? o.freteCents : 0;
+    for (const type of o.deliveryTypes) {
+      const est = searchService.estimateDelivery(type, o.distanceKm);
+      const shipping = type === "moto" ? o.shippingCents : 0;
       options.push({
         pharmacyId: o.pharmacyId,
-        nomeFantasia: o.nomeFantasia,
-        tipo,
-        precoTotalCents: o.precoCents + frete,
-        tempoEstimadoMin: est.tempoMin,
+        tradeName: o.tradeName,
+        type,
+        totalPriceCents: o.priceCents + shipping,
+        estimatedTimeMin: est.timeMin,
       });
     }
   }
   return options;
 }
 
-const getWeatherTool = tool({
-  name: "get_weather",
-  description:
-    "Retorna as condições climáticas em tempo real de uma cidade brasileira, usadas para avaliar o risco da moto entrega.",
-  parameters: z.object({
-    cidade: z.string().describe("Nome da cidade a consultar."),
-    estado: z.string().describe("Nome do estado (UF por extenso) da cidade."),
-  }),
-  async execute({ cidade, estado }) {
-    const snapshot = await weatherService.getCurrentWeather(cidade, estado);
-    return JSON.stringify(snapshot);
-  },
-});
-
 function buildAgent() {
   const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
   return new Agent({
     name: "Delivery Advisor",
     model,
-    instructions: `Você é um assistente que ajuda um cliente de farmácia a escolher a melhor forma de receber um medicamento entre três opções: "retirada" (retirada na loja), "moto" (moto entrega) e "distribuicao" (centro de distribuição).
+    instructions: `Você é um assistente que ajuda um cliente de farmácia a escolher a melhor forma de receber um medicamento entre três opções: "pickup" (retirada na loja), "moto" (moto entrega) e "distribution" (centro de distribuição).
 
 Regras:
 1. Você sempre recebe uma lista de opções já calculadas, cada uma com preço total (em centavos) e tempo estimado (em minutos).
-2. Antes de decidir, SEMPRE chame a ferramenta get_weather para a cidade e estado informados no prompt, para saber as condições climáticas atuais em tempo real.
+2. As condições climáticas atuais em tempo real já são fornecidas no prompt (incluindo o campo heavyRain); use-as diretamente, não há ferramenta a chamar.
 3. Priorize principalmente o tempo estimado de entrega/retirada. Preço é um critério secundário para desempatar opções com tempo parecido.
-4. Se o clima indicar chuva forte, tempestade ou condição severa (chuvaForte = true), considere que a moto entrega pode atrasar ou ficar arriscada e prefira "retirada" ou "distribuicao" quando o tempo delas for razoável, deixando isso claro na justificativa e em climaConsiderado. Se o clima estiver bom (chuvaForte = false), diga isso brevemente em climaConsiderado.
+4. Se o clima indicar chuva forte, tempestade ou condição severa (heavyRain = true), considere que a moto entrega pode atrasar ou ficar arriscada e prefira "pickup" ou "distribution" quando o tempo delas for razoável, deixando isso claro em rationale e em weatherConsidered. Se o clima estiver bom (heavyRain = false), diga isso brevemente em weatherConsidered.
 5. Responda sempre em português do Brasil, em tom calmo e direto, sem alarmismo.
-6. O campo pharmacyId da resposta deve ser exatamente o pharmacyId da opção escolhida.`,
-    tools: [getWeatherTool],
+6. O campo pharmacyId da resposta deve ser exatamente o pharmacyId da opção escolhida.
+7. O campo bestOption deve ser exatamente "pickup", "moto" ou "distribution".`,
     outputType: RecommendationSchema,
   });
 }
@@ -105,30 +91,36 @@ export const deliveryAdvisorService = {
 
     setDefaultOpenAIKey(apiKey);
 
+    // Fetch the weather once and feed it into the prompt, so the model reasons
+    // over the exact same snapshot we return to the client.
+    const weather: WeatherSnapshot = await weatherService.getCurrentWeather(params.cidade, params.estado);
+
     const prompt = `Cidade do cliente: ${params.cidade} (${params.estado}).
+
+Clima atual (em tempo real): ${JSON.stringify(weather)}
 
 Opções de entrega disponíveis (compare todas antes de decidir):
 ${options
   .map(
     (o, i) =>
-      `${i + 1}. tipo="${o.tipo}" | farmácia="${o.nomeFantasia}" | pharmacyId="${o.pharmacyId}" | preço total=R$ ${(o.precoTotalCents / 100).toFixed(2)} | tempo estimado=${o.tempoEstimadoMin} min`
+      `${i + 1}. type="${o.type}" | farmácia="${o.tradeName}" | pharmacyId="${o.pharmacyId}" | preço total=R$ ${(o.totalPriceCents / 100).toFixed(2)} | tempo estimado=${o.estimatedTimeMin} min`
   )
   .join("\n")}
 
-Consulte o clima atual de ${params.cidade} (${params.estado}) com a ferramenta disponível e então recomende a melhor opção.`;
+Considerando o clima acima, recomende a melhor opção.`;
 
     try {
       const agent = buildAgent();
       const result = await run(agent, prompt, { maxTurns: 4 });
       const recommendation = result.finalOutput;
       if (!recommendation) {
-        return { ok: false, error: "O assistente não retornou uma recomendação válida." };
+        return { ok: false, error: "Não foi possível gerar a recomendação." };
       }
-      const weather = await weatherService.getCurrentWeather(params.cidade, params.estado);
       return { ok: true, recommendation, weather };
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Falha ao gerar recomendação.";
-      return { ok: false, error: message };
+      // Log the detailed upstream error server-side; never leak it to the client.
+      console.error("[delivery-advisor] recommendation failed:", err);
+      return { ok: false, error: "Não foi possível gerar a recomendação." };
     }
   },
 };
