@@ -35,6 +35,9 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   allowedDevOrigins,
+  // Native/node-API driver must stay out of the server bundle so its binary
+  // bindings resolve from node_modules at runtime.
+  serverExternalPackages: ["@libsql/client"],
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

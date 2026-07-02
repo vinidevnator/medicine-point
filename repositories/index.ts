@@ -8,7 +8,7 @@ export const authRepo = {
     return db.select().from(users).where(eq(users.email, email)).get();
   },
   findUserWithPharmacy(userId: string) {
-    const row = db
+    return db
       .select({
         user: users,
         pharmacy: pharmacies,
@@ -17,16 +17,16 @@ export const authRepo = {
       .leftJoin(pharmacies, eq(pharmacies.id, users.pharmacyId))
       .where(eq(users.id, userId))
       .get();
-    return row;
   },
-  createUser(input: {
+  async createUser(input: {
     id: string;
     email: string;
     passwordHash: string;
     role: "pharmacy_admin";
     pharmacyId: string;
   }) {
-    db.insert(users)
+    await db
+      .insert(users)
       .values({
         id: input.id,
         email: input.email,
@@ -40,11 +40,11 @@ export const authRepo = {
 } satisfies Record<string, (...args: never[]) => unknown>;
 
 export const pharmacyRepo = {
-  create(input: Omit<typeof pharmacies.$inferInsert, "createdAt" | "updatedAt">) {
-    db.insert(pharmacies).values(input).run();
+  async create(input: Omit<typeof pharmacies.$inferInsert, "createdAt" | "updatedAt">) {
+    await db.insert(pharmacies).values(input).run();
   },
-  createSettings(input: Omit<typeof pharmacySettings.$inferInsert, "createdAt" | "updatedAt">) {
-    db.insert(pharmacySettings).values(input).run();
+  async createSettings(input: Omit<typeof pharmacySettings.$inferInsert, "createdAt" | "updatedAt">) {
+    await db.insert(pharmacySettings).values(input).run();
   },
   getSettings(pharmacyId: string) {
     return db
@@ -53,11 +53,12 @@ export const pharmacyRepo = {
       .where(eq(pharmacySettings.pharmacyId, pharmacyId))
       .get();
   },
-  updateSettings(
+  async updateSettings(
     pharmacyId: string,
     input: Partial<Omit<typeof pharmacySettings.$inferInsert, "createdAt" | "updatedAt" | "id" | "pharmacyId">>
   ) {
-    db.update(pharmacySettings)
+    await db
+      .update(pharmacySettings)
       .set({ ...input, updatedAt: new Date() })
       .where(eq(pharmacySettings.pharmacyId, pharmacyId))
       .run();
@@ -65,8 +66,9 @@ export const pharmacyRepo = {
   get(pharmacyId: string) {
     return db.select().from(pharmacies).where(eq(pharmacies.id, pharmacyId)).get();
   },
-  update(pharmacyId: string, input: Partial<typeof pharmacies.$inferInsert>) {
-    db.update(pharmacies)
+  async update(pharmacyId: string, input: Partial<typeof pharmacies.$inferInsert>) {
+    await db
+      .update(pharmacies)
       .set({ ...input, updatedAt: new Date() })
       .where(eq(pharmacies.id, pharmacyId))
       .run();
@@ -90,31 +92,32 @@ export const productRepo = {
   getByEanGlobal(ean: string) {
     return db.select().from(products).where(eq(products.ean, ean)).all();
   },
-  getByPharmacyAndEan(pharmacyId: string, ean: string) {
-    return db
+  async getByPharmacyAndEan(pharmacyId: string, ean: string) {
+    const rows = await db
       .select()
       .from(products)
       .where(eq(products.pharmacyId, pharmacyId))
-      .all()
-      .find((p) => p.ean === ean);
+      .all();
+    return rows.find((p) => p.ean === ean);
   },
   getById(id: string) {
     return db.select().from(products).where(eq(products.id, id)).get();
   },
-  create(input: Omit<typeof products.$inferInsert, "createdAt" | "updatedAt">) {
-    db.insert(products).values(input).run();
+  async create(input: Omit<typeof products.$inferInsert, "createdAt" | "updatedAt">) {
+    await db.insert(products).values(input).run();
   },
-  update(id: string, input: Partial<typeof products.$inferInsert>) {
-    db.update(products)
+  async update(id: string, input: Partial<typeof products.$inferInsert>) {
+    await db
+      .update(products)
       .set({ ...input, updatedAt: new Date() })
       .where(eq(products.id, id))
       .run();
   },
-  delete(id: string) {
-    db.delete(products).where(eq(products.id, id)).run();
+  async delete(id: string) {
+    await db.delete(products).where(eq(products.id, id)).run();
   },
-  listDistinctEans() {
-    const rows = db
+  async listDistinctEans() {
+    const rows = await db
       .select({ ean: products.ean, name: products.name, description: products.description, category: products.category })
       .from(products)
       .all();

@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Produtos" };
 
 export default async function ProductsPage() {
   const session = await requirePharmacy();
-  const products = productRepo.listByPharmacy(session.pharmacyId);
+  const products = await productRepo.listByPharmacy(session.pharmacyId);
 
   return (
     <div className="space-y-6 animate-fade-in">

@@ -50,7 +50,7 @@ export async function POST(request: Request): Promise<Response> {
   const formattedCep = `${cep.slice(0, 5)}-${cep.slice(5)}`;
   // Offerings and address are always recomputed server-side (never trusted from the client)
   // so the recommendation can't be manipulated via a tampered request body.
-  const offerings = searchService.findByEanAndCep(ean, formattedCep);
+  const offerings = await searchService.findByEanAndCep(ean, formattedCep);
   if (offerings.length === 0) {
     return NextResponse.json(
       { error: "Nenhuma opção de entrega encontrada para este CEP." },

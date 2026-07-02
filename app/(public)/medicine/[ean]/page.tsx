@@ -29,13 +29,13 @@ function CategoryGlyph({ slug, className }: { slug: string; className?: string }
   return <Icon className={className} aria-hidden />;
 }
 
-export function generateStaticParams() {
-  return productRepo.listDistinctEans().map((p) => ({ ean: p.ean }));
+export async function generateStaticParams() {
+  return (await productRepo.listDistinctEans()).map((p) => ({ ean: p.ean }));
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { ean } = await params;
-  const product = productRepo.getByEanGlobal(ean)[0];
+  const product = (await productRepo.getByEanGlobal(ean))[0];
   if (!product) return { title: "Medicamento não encontrado" };
   return {
     title: product.name,
@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function ProductPage({ params }: { params: Params }) {
   const { ean } = await params;
-  const product = productRepo.getByEanGlobal(ean)[0];
+  const product = (await productRepo.getByEanGlobal(ean))[0];
   if (!product) notFound();
 
   const categoryLabel = CATEGORY_LABELS[product.category] ?? "Medicamento";

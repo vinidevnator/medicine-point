@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Minha Conta" };
 
 export default async function AccountPage() {
   const session = await requirePharmacy();
-  const ph = pharmacyRepo.get(session.pharmacyId);
+  const ph = await pharmacyRepo.get(session.pharmacyId);
   if (!ph) return <Card>Farmácia não encontrada.</Card>;
 
   return (

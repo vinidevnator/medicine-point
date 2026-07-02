@@ -20,7 +20,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
   const custom = fromTs !== null && toTs !== null ? { from: fromTs, to: toTs + 86399 } : undefined;
   const okFilters: ReportFilter[] = ["today", "yesterday", "7d", "30d", "custom"];
   const safeFilter = okFilters.includes(filter as ReportFilter) ? filter : "7d";
-  const report = reportService.build(session.pharmacyId, safeFilter, custom);
+  const report = await reportService.build(session.pharmacyId, safeFilter, custom);
 
   const pieData = [
     { name: "Retirada", value: report.byPickup },

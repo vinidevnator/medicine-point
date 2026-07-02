@@ -1,11 +1,12 @@
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  dialect: "sqlite",
+  dialect: "turso",
   schema: "./db/schema/index.ts",
   out: "./db/migrations",
   dbCredentials: {
-    url: "./medicine-point.db",
+    url: process.env.TURSO_DATABASE_URL ?? "file:medicine-point.db",
+    authToken: process.env.TURSO_AUTH_TOKEN,
   },
   verbose: true,
   strict: true,

@@ -12,7 +12,7 @@ O Medicine Point foi concebido com foco nas farmácias. A plataforma permite que
 - [React](https://react.dev) **19.2.4**
 - [TypeScript](https://www.typescriptlang.org) **5** (strict, `moduleResolution: "bundler"`)
 - [Tailwind CSS](https://tailwindcss.com) **v4** com `@tailwindcss/postcss`
-- [Drizzle ORM](https://orm.drizzle.team) + [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)
+- [Drizzle ORM](https://orm.drizzle.team) + [libSQL/Turso](https://turso.tech) (arquivo SQLite local em desenvolvimento)
 - Autenticação com [jose](https://github.com/panva/jose) + [bcryptjs](https://github.com/dcodeIO/bcrypt.js)
 - Validação com [Zod](https://zod.dev)
 - Ícones com [Lucide React](https://lucide.dev)
@@ -105,6 +105,15 @@ O Medicine Point foi concebido com foco nas farmácias. A plataforma permite que
 
 O projeto pode ser implantado na [Vercel](https://vercel.com) ou em qualquer ambiente compatível com Next.js. Consulte a [documentação de deploy do Next.js](https://nextjs.org/docs/app/building-your-application/deploying) para mais detalhes.
 
+Como o filesystem serverless da Vercel é efêmero, o banco em arquivo local não persiste em produção. Configure um banco [Turso](https://turso.tech) e defina as variáveis de ambiente no projeto da Vercel:
+
+- `TURSO_DATABASE_URL` — URL `libsql://...` do banco
+- `TURSO_AUTH_TOKEN` — token de acesso
+- `AUTH_SECRET` — segredo de assinatura de sessão (>=32 caracteres; `openssl rand -base64 32`)
+- `OPENAI_API_KEY` — para o assistente de entrega
+
+O `prebuild` aplica as migrations e o seed idempotente contra o banco configurado durante o build.
+
 ---
 
 # Medicine Point (English)
@@ -121,7 +130,7 @@ Medicine Point was designed with pharmacies as its primary focus. The platform e
 - [React](https://react.dev) **19.2.4**
 - [TypeScript](https://www.typescriptlang.org) **5** (strict, `moduleResolution: "bundler"`)
 - [Tailwind CSS](https://tailwindcss.com) **v4** with `@tailwindcss/postcss`
-- [Drizzle ORM](https://orm.drizzle.team) + [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)
+- [Drizzle ORM](https://orm.drizzle.team) + [libSQL/Turso](https://turso.tech) (local SQLite file in development)
 - Auth with [jose](https://github.com/panva/jose) + [bcryptjs](https://github.com/dcodeIO/bcrypt.js)
 - Validation with [Zod](https://zod.dev)
 - Icons with [Lucide React](https://lucide.dev)
@@ -213,3 +222,12 @@ Medicine Point was designed with pharmacies as its primary focus. The platform e
 ## Deploy
 
 This project can be deployed on [Vercel](https://vercel.com) or any Next.js-compatible hosting. See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for details.
+
+Because Vercel's serverless filesystem is ephemeral, the local file database does not persist in production. Provision a [Turso](https://turso.tech) database and set these environment variables on the Vercel project:
+
+- `TURSO_DATABASE_URL` — the database's `libsql://...` URL
+- `TURSO_AUTH_TOKEN` — access token
+- `AUTH_SECRET` — session signing secret (>=32 chars; `openssl rand -base64 32`)
+- `OPENAI_API_KEY` — for the delivery advisor
+
+The `prebuild` step applies migrations and the idempotent seed against the configured database during the build.

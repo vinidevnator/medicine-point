@@ -33,11 +33,11 @@ export async function createProductAction(_prev: ProductState, formData: FormDat
     };
   }
   const d = parsed.data;
-  if (productRepo.getByPharmacyAndEan(session.pharmacyId, d.ean)) {
+  if (await productRepo.getByPharmacyAndEan(session.pharmacyId, d.ean)) {
     return { ok: false, error: "EAN já cadastrado.", fieldErrors: { ean: ["EAN já cadastrado"] } };
   }
   try {
-    productRepo.create({
+    await productRepo.create({
       id: randomUUID(),
       pharmacyId: session.pharmacyId,
       ean: d.ean,
@@ -74,13 +74,13 @@ export async function updateProductAction(_prev: ProductState, formData: FormDat
   if (!parsed.success) {
     return { ok: false, error: "Verifique os campos.", fieldErrors: collect(parsed.error) };
   }
-  const product = productRepo.getById(id);
+  const product = await productRepo.getById(id);
   if (!product || product.pharmacyId !== session.pharmacyId) {
     return { ok: false, error: "Produto não encontrado." };
   }
   const d = parsed.data;
   try {
-    productRepo.update(id, {
+    await productRepo.update(id, {
       ean: d.ean,
       name: d.name,
       description: d.description,
@@ -102,9 +102,9 @@ export async function updateProductAction(_prev: ProductState, formData: FormDat
 export async function deleteProductAction(formData: FormData): Promise<void> {
   const session = await requirePharmacy();
   const id = String(formData.get("id") ?? "");
-  const product = productRepo.getById(id);
+  const product = await productRepo.getById(id);
   if (!product || product.pharmacyId !== session.pharmacyId) return;
-  productRepo.delete(id);
+  await productRepo.delete(id);
   revalidateProductPages();
 }
 

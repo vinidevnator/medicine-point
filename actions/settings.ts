@@ -13,7 +13,7 @@ export type SettingsState = {
 
 export async function updateSettingsAction(_prev: SettingsState, formData: FormData): Promise<SettingsState> {
   const session = await requirePharmacy();
-  const settings = pharmacyRepo.getSettings(session.pharmacyId);
+  const settings = await pharmacyRepo.getSettings(session.pharmacyId);
   if (!settings) return { ok: false, error: "Configuração não encontrada." };
   const raw = {
     baseCep: String(formData.get("baseCep") ?? ""),
@@ -27,7 +27,7 @@ export async function updateSettingsAction(_prev: SettingsState, formData: FormD
     return { ok: false, error: "Verifique as configurações.", fieldErrors: collect(parsed.error) };
   }
   const d = parsed.data;
-  pharmacyRepo.updateSettings(session.pharmacyId, {
+  await pharmacyRepo.updateSettings(session.pharmacyId, {
     baseCep: d.baseCep,
     radiusKm: d.radiusKm,
     acceptsPickup: d.acceptsPickup,
@@ -50,7 +50,7 @@ export async function updateAccountAction(_prev: SettingsState, formData: FormDa
   if (!parsed.success) {
     return { ok: false, error: "Verifique os dados.", fieldErrors: collect(parsed.error) };
   }
-  pharmacyRepo.update(session.pharmacyId, {
+  await pharmacyRepo.update(session.pharmacyId, {
     legalName: parsed.data.legalName,
     tradeName: parsed.data.tradeName,
     email: parsed.data.email,

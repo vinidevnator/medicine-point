@@ -7,7 +7,7 @@ import { pharmacyRepo } from "@/repositories";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await requirePharmacy();
-  const pharmacy = pharmacyRepo.get(session.pharmacyId);
+  const pharmacy = await pharmacyRepo.get(session.pharmacyId);
 
   return (
     <div className="flex min-h-svh flex-col bg-background md:flex-row">

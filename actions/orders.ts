@@ -26,7 +26,7 @@ export async function buyNowAction(
   if (!productEan || customerCep.length !== 8) {
     return { ok: false, error: "Informe CEP e produto válidos." };
   }
-  const res = orderService.placeOrder({
+  const res = await orderService.placeOrder({
     pharmacyId,
     productEan,
     customerCep,
@@ -45,7 +45,7 @@ export async function advanceOrderAction(formData: FormData): Promise<void> {
   const session = await requirePharmacy();
   const orderId = String(formData.get("id") ?? "");
   if (!orderId) return;
-  orderService.advance(orderId, session.pharmacyId);
+  await orderService.advance(orderId, session.pharmacyId);
   revalidatePath("/dashboard/orders");
   revalidatePath(`/order/${orderId}`);
 }

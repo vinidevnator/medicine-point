@@ -14,8 +14,8 @@ export const metadata: Metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
   const session = await requirePharmacy();
-  const kpis = reportService.dashboardKpis(session.pharmacyId);
-  const report = reportService.build(session.pharmacyId, "7d");
+  const kpis = await reportService.dashboardKpis(session.pharmacyId);
+  const report = await reportService.build(session.pharmacyId, "7d");
 
   const pieData = [
     { name: "Retirada", value: report.byPickup },
@@ -23,7 +23,7 @@ export default async function DashboardPage() {
     { name: "Parceiro", value: report.byDistribution },
   ].filter((d) => d.value > 0);
 
-  const recent = orderRepo.listByPharmacy(session.pharmacyId).slice(0, 5);
+  const recent = (await orderRepo.listByPharmacy(session.pharmacyId)).slice(0, 5);
 
   return (
     <div className="space-y-6 animate-fade-in">

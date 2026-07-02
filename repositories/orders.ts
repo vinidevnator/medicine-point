@@ -5,10 +5,10 @@ import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 import { startOfDayUnix, startOfMonthUnix } from "@/lib/format";
 
 export const orderRepo = {
-  get(id: string) {
-    const order = db.select().from(orders).where(eq(orders.id, id)).get();
+  async get(id: string) {
+    const order = await db.select().from(orders).where(eq(orders.id, id)).get();
     if (!order) return null;
-    const items = db.select().from(orderItems).where(eq(orderItems.orderId, id)).all();
+    const items = await db.select().from(orderItems).where(eq(orderItems.orderId, id)).all();
     return { order, items };
   },
   listByPharmacy(pharmacyId: string) {
@@ -20,7 +20,7 @@ export const orderRepo = {
       .all();
   },
   summaryForRange(pharmacyId: string, fromUnix: number, toUnix: number) {
-    const rows = db
+    return db
       .select({
         deliveryType: orders.deliveryType,
         status: orders.status,
@@ -37,10 +37,9 @@ export const orderRepo = {
         )
       )
       .all();
-    return rows;
   },
   itemsForRange(pharmacyId: string, fromUnix: number, toUnix: number) {
-    const rows = db
+    return db
       .select({
         name: orderItems.name,
         ean: orderItems.ean,
@@ -58,42 +57,42 @@ export const orderRepo = {
         )
       )
       .all();
-    return rows;
   },
-  countByStatus(pharmacyId: string, status: "released" | "assembled" | "ready_pickup") {
-    return db
+  async countByStatus(pharmacyId: string, status: "released" | "assembled" | "ready_pickup") {
+    const row = await db
       .select({ count: sql<number>`count(*)` })
       .from(orders)
       .where(and(eq(orders.pharmacyId, pharmacyId), eq(orders.status, status)))
-      .get()?.count ?? 0;
+      .get();
+    return row?.count ?? 0;
   },
-  soldToday(pharmacyId: string) {
+  async soldToday(pharmacyId: string) {
     const startOfDay = startOfDayUnix();
-    const rows = db
+    const row = await db
       .select({ q: sql<number>`coalesce(sum(${orderItems.quantity}),0)` })
       .from(orderItems)
       .innerJoin(orders, eq(orders.id, orderItems.orderId))
       .where(and(eq(orders.pharmacyId, pharmacyId), gte(orderItems.createdAt, new Date(startOfDay * 1000))))
       .get();
-    return rows?.q ?? 0;
+    return row?.q ?? 0;
   },
-  soldThisMonth(pharmacyId: string) {
+  async soldThisMonth(pharmacyId: string) {
     const start = startOfMonthUnix();
-    const rows = db
+    const row = await db
       .select({ q: sql<number>`coalesce(sum(${orderItems.quantity}),0)` })
       .from(orderItems)
       .innerJoin(orders, eq(orders.id, orderItems.orderId))
       .where(and(eq(orders.pharmacyId, pharmacyId), gte(orderItems.createdAt, new Date(start * 1000))))
       .get();
-    return rows?.q ?? 0;
+    return row?.q ?? 0;
   },
-  revenueEstimate(pharmacyId: string) {
-    const rows = db
+  async revenueEstimate(pharmacyId: string) {
+    const row = await db
       .select({ r: sql<number>`coalesce(sum(${orders.totalPriceCents}),0)` })
       .from(orders)
       .where(eq(orders.pharmacyId, pharmacyId))
       .get();
-    return rows?.r ?? 0;
+    return row?.r ?? 0;
   },
 };
 

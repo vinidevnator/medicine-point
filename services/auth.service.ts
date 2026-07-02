@@ -68,7 +68,7 @@ export const authService = {
     }
     const d = parsed.data;
 
-    if (authRepo.findByEmail(d.email)) {
+    if (await authRepo.findByEmail(d.email)) {
       return { ok: false, error: "E-mail já cadastrado.", fieldErrors: { email: ["E-mail já cadastrado"] } };
     }
 
@@ -77,7 +77,7 @@ export const authService = {
     const passwordHash = bcrypt.hashSync(d.password, 10);
     const coords = CEP_INFO[d.cep] ?? { lat: -23.5616, lng: -46.6561 };
 
-    pharmacyRepo.create({
+    await pharmacyRepo.create({
       id: pharmacyId,
       cnpj: d.cnpj,
       legalName: d.legalName,
@@ -95,7 +95,7 @@ export const authService = {
       lng: coords.lng,
     });
 
-    pharmacyRepo.createSettings({
+    await pharmacyRepo.createSettings({
       id: randomUUID(),
       pharmacyId,
       baseCep: d.cep,
@@ -105,7 +105,7 @@ export const authService = {
       motoShippingCents: 599,
     });
 
-    authRepo.createUser({
+    await authRepo.createUser({
       id: userId,
       email: d.email,
       passwordHash,
@@ -114,7 +114,7 @@ export const authService = {
     });
 
     for (const p of SEED_PRODUCTS) {
-      productRepo.create({
+      await productRepo.create({
         id: randomUUID(),
         pharmacyId,
         ean: p.ean,
@@ -144,7 +144,7 @@ export const authService = {
         fieldErrors: zodErrors(parsed.error),
       };
     }
-    const user = authRepo.findByEmail(parsed.data.email);
+    const user = await authRepo.findByEmail(parsed.data.email);
     if (!user || !user.pharmacyId) {
       return { ok: false, error: "Credenciais inválidas.", fieldErrors: { password: ["Credenciais inválidas"] } };
     }

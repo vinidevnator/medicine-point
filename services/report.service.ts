@@ -15,10 +15,12 @@ export type ReportData = {
 };
 
 export const reportService = {
-  build(pharmacyId: string, filter: ReportFilter, custom?: { from: number; to: number }): ReportData {
+  async build(pharmacyId: string, filter: ReportFilter, custom?: { from: number; to: number }): Promise<ReportData> {
     const { from, to, days } = resolveRange(filter, custom);
-    const orders = orderRepo.summaryForRange(pharmacyId, from, to);
-    const items = orderRepo.itemsForRange(pharmacyId, from, to);
+    const [orders, items] = await Promise.all([
+      orderRepo.summaryForRange(pharmacyId, from, to),
+      orderRepo.itemsForRange(pharmacyId, from, to),
+    ]);
 
     const totalSold = items.reduce((s, i) => s + i.quantity, 0);
     const revenueCents = orders.reduce((s, o) => s + o.total, 0);
@@ -66,20 +68,29 @@ export const reportService = {
     };
   },
 
-  dashboardKpis(pharmacyId: string) {
+  async dashboardKpis(pharmacyId: string) {
+    const [products, soldToday, soldThisMonth, awaitingPickup, motoOrders, estimatedRevenue] =
+      await Promise.all([
+        productRepo.listByPharmacy(pharmacyId),
+        orderRepo.soldToday(pharmacyId),
+        orderRepo.soldThisMonth(pharmacyId),
+        orderRepo.countByStatus(pharmacyId, "ready_pickup"),
+        countByType(pharmacyId, "moto"),
+        orderRepo.revenueEstimate(pharmacyId),
+      ]);
     return {
-      registeredProducts: productRepo.listByPharmacy(pharmacyId).length,
-      soldToday: orderRepo.soldToday(pharmacyId),
-      soldThisMonth: orderRepo.soldThisMonth(pharmacyId),
-      awaitingPickup: orderRepo.countByStatus(pharmacyId, "ready_pickup"),
-      motoOrders: countByType(pharmacyId, "moto"),
-      estimatedRevenue: orderRepo.revenueEstimate(pharmacyId),
+      registeredProducts: products.length,
+      soldToday,
+      soldThisMonth,
+      awaitingPickup,
+      motoOrders,
+      estimatedRevenue,
     };
   },
 };
 
-function countByType(pharmacyId: string, type: "pickup" | "moto" | "distribution"): number {
-  const list = orderRepo.listByPharmacy(pharmacyId);
+async function countByType(pharmacyId: string, type: "pickup" | "moto" | "distribution"): Promise<number> {
+  const list = await orderRepo.listByPharmacy(pharmacyId);
   return list.filter((o) => o.deliveryType === type).length;
 }
 

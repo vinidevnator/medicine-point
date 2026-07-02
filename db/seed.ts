@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import { migrate } from "drizzle-orm/libsql/migrator";
 import { eq, ne } from "drizzle-orm";
 import * as schema from "./schema";
 import { users, pharmacies, pharmacySettings, products } from "./schema";
@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 import path from "node:path";
 import { DC_PHARMACY_ID } from "../lib/constants";
 
-const DB_PATH = path.resolve(process.cwd(), "medicine-point.db");
+const DB_URL = process.env.TURSO_DATABASE_URL ?? "file:medicine-point.db";
 const MIGRATIONS_FOLDER = path.resolve(process.cwd(), "db/migrations");
 
 const SEED_PRODUCTS = [
@@ -42,12 +42,12 @@ const SEED_PRODUCTS = [
   },
 ] as const;
 
-function ensureDcPharmacy(db: ReturnType<typeof drizzle>): void {
-  const dc = db.select().from(pharmacies).where(eq(pharmacies.id, DC_PHARMACY_ID)).get();
+async function ensureDcPharmacy(db: ReturnType<typeof drizzle>): Promise<void> {
+  const dc = await db.select().from(pharmacies).where(eq(pharmacies.id, DC_PHARMACY_ID)).get();
   if (dc) return;
 
-  db.transaction((tx) => {
-    tx.insert(pharmacies)
+  await db.transaction(async (tx) => {
+    await tx.insert(pharmacies)
       .values({
         id: DC_PHARMACY_ID,
         cnpj: "00.000.000/0001-00",
@@ -67,7 +67,7 @@ function ensureDcPharmacy(db: ReturnType<typeof drizzle>): void {
       })
       .run();
 
-    tx.insert(pharmacySettings)
+    await tx.insert(pharmacySettings)
       .values({
         id: randomUUID(),
         pharmacyId: DC_PHARMACY_ID,
@@ -83,19 +83,28 @@ function ensureDcPharmacy(db: ReturnType<typeof drizzle>): void {
   console.log("[seed] Entrega de Parceiro virtual pharmacy created.");
 }
 
-function run() {
-  const sqlite = new Database(DB_PATH);
-  sqlite.pragma("journal_mode = WAL");
-  sqlite.pragma("foreign_keys = OFF");
-  const db = drizzle({ client: sqlite, schema });
+async function run(): Promise<void> {
+  const client = createClient({
+    url: DB_URL,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  });
+  const db = drizzle({ client, schema });
 
-  console.log("[seed] applying migrations…");
-  migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
-  sqlite.pragma("foreign_keys = ON");
+  console.log(`[seed] applying migrations to ${DB_URL.startsWith("file:") ? DB_URL : "remote Turso database"}…`);
+  await migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
 
-  ensureDcPharmacy(db);
+  if (DB_URL.startsWith("file:")) {
+    await client.execute("PRAGMA foreign_keys = ON");
+  }
 
-  const existing = db.select().from(pharmacies).where(ne(pharmacies.id, DC_PHARMACY_ID)).limit(1).all();
+  await ensureDcPharmacy(db);
+
+  const existing = await db
+    .select()
+    .from(pharmacies)
+    .where(ne(pharmacies.id, DC_PHARMACY_ID))
+    .limit(1)
+    .all();
   if (existing.length > 0) {
     console.log("[seed] demo pharmacy already exists — skipping.");
     return;
@@ -104,8 +113,8 @@ function run() {
   const pharmacyId = randomUUID();
   const userId = randomUUID();
 
-  db.transaction((tx) => {
-    tx.insert(pharmacies)
+  await db.transaction(async (tx) => {
+    await tx.insert(pharmacies)
       .values({
         id: pharmacyId,
         cnpj: "12.345.678/0001-90",
@@ -125,7 +134,7 @@ function run() {
       })
       .run();
 
-    tx.insert(pharmacySettings)
+    await tx.insert(pharmacySettings)
       .values({
         id: randomUUID(),
         pharmacyId,
@@ -138,7 +147,7 @@ function run() {
       .run();
 
     const passwordHash = bcrypt.hashSync("demo12345", 10);
-    tx.insert(users)
+    await tx.insert(users)
       .values({
         id: userId,
         email: "demo@medicinepoint.com.br",
@@ -149,7 +158,7 @@ function run() {
       .run();
 
     for (const p of SEED_PRODUCTS) {
-      tx.insert(products)
+      await tx.insert(products)
         .values({
           id: randomUUID(),
           pharmacyId,
@@ -170,4 +179,7 @@ function run() {
   console.log("      senha: demo12345");
 }
 
-run();
+run().catch((err) => {
+  console.error("[seed] failed:", err);
+  process.exitCode = 1;
+});

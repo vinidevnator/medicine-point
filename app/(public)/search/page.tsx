@@ -31,7 +31,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
   const query = (q ?? "").toLowerCase().trim();
   const category = cat ?? "";
 
-  let list = productRepo.listDistinctEans();
+  let list = await productRepo.listDistinctEans();
 
   if (query) {
     list = list.filter(
@@ -42,19 +42,21 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
     list = list.filter((p) => p.category === category);
   }
 
-  const products = list.map((d) => {
-    const rows = productRepo.getByEanGlobal(d.ean);
-    const lowestPrice = rows.length > 0 ? Math.min(...rows.map((r) => r.priceCents)) : 0;
-    const totalStock = rows.reduce((sum, r) => sum + r.quantity, 0);
-    return {
-      ean: d.ean,
-      name: d.name,
-      description: d.description,
-      priceCents: lowestPrice,
-      imagePath: defaultMedicineImage(),
-      quantity: totalStock,
-    };
-  });
+  const products = await Promise.all(
+    list.map(async (d) => {
+      const rows = await productRepo.getByEanGlobal(d.ean);
+      const lowestPrice = rows.length > 0 ? Math.min(...rows.map((r) => r.priceCents)) : 0;
+      const totalStock = rows.reduce((sum, r) => sum + r.quantity, 0);
+      return {
+        ean: d.ean,
+        name: d.name,
+        description: d.description,
+        priceCents: lowestPrice,
+        imagePath: defaultMedicineImage(),
+        quantity: totalStock,
+      };
+    })
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 md:px-6 animate-fade-in">

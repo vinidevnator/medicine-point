@@ -26,7 +26,7 @@ const STEPS = [
 
 export default async function OrderPage({ params }: { params: Params }) {
   const { id } = await params;
-  const detail = orderRepo.get(id);
+  const detail = await orderRepo.get(id);
   if (!detail) notFound();
   const { order, items } = detail;
 

@@ -22,12 +22,12 @@ export type PlaceOrderResult =
 const OUT_OF_STOCK = "OUT_OF_STOCK";
 
 /** Ensures the DC virtual pharmacy has a stock row for `ean`, provisioning one on demand. */
-function ensureDcStock(ean: string) {
-  const existing = productRepo.getByPharmacyAndEan(DC_PHARMACY_ID, ean);
+async function ensureDcStock(ean: string) {
+  const existing = await productRepo.getByPharmacyAndEan(DC_PHARMACY_ID, ean);
   if (existing) return existing;
-  const reference = productRepo.getByEanGlobal(ean)[0];
+  const reference = (await productRepo.getByEanGlobal(ean))[0];
   if (!reference) return undefined;
-  productRepo.create({
+  await productRepo.create({
     id: randomUUID(),
     pharmacyId: DC_PHARMACY_ID,
     ean: reference.ean,
@@ -41,15 +41,15 @@ function ensureDcStock(ean: string) {
 }
 
 export const orderService = {
-  placeOrder(input: PlaceOrderInput): PlaceOrderResult {
+  async placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResult> {
     const productRow =
       input.pharmacyId === DC_PHARMACY_ID
-        ? ensureDcStock(input.productEan)
-        : productRepo.getByPharmacyAndEan(input.pharmacyId, input.productEan);
+        ? await ensureDcStock(input.productEan)
+        : await productRepo.getByPharmacyAndEan(input.pharmacyId, input.productEan);
     if (!productRow || productRow.quantity < input.quantity) {
       return { ok: false, error: "Estoque insuficiente para o pedido." };
     }
-    const offerings = searchService.findByEanAndCep(input.productEan, input.customerCep);
+    const offerings = await searchService.findByEanAndCep(input.productEan, input.customerCep);
     const offering = offerings.find((o) => o.pharmacyId === input.pharmacyId);
     const distance = offering?.distanceKm ?? 5;
     const est = searchService.estimateDelivery(input.deliveryType, distance);
@@ -63,8 +63,8 @@ export const orderService = {
     const stage3 = new Date(now.getTime() + (est.timeMin * (2 / 3)) * 60 * 1000);
 
     try {
-      db.transaction((tx) => {
-        const decremented = tx
+      await db.transaction(async (tx) => {
+        const decremented = await tx
           .update(products)
           .set({
             quantity: sql`${products.quantity} - ${input.quantity}`,
@@ -72,9 +72,9 @@ export const orderService = {
           })
           .where(and(eq(products.id, productRow.id), gte(products.quantity, input.quantity)))
           .run();
-        if (decremented.changes === 0) throw new Error(OUT_OF_STOCK);
+        if (decremented.rowsAffected === 0) throw new Error(OUT_OF_STOCK);
 
-        tx.insert(orders)
+        await tx.insert(orders)
           .values({
             id: orderId,
             pharmacyId: input.pharmacyId,
@@ -90,7 +90,7 @@ export const orderService = {
             stage3At: input.deliveryType === "pickup" ? stage3 : null,
           })
           .run();
-        tx.insert(orderItems)
+        await tx.insert(orderItems)
           .values({
             id: randomUUID(),
             orderId,
@@ -112,8 +112,8 @@ export const orderService = {
     return { ok: true, orderId };
   },
 
-  advance(orderId: string, pharmacyId: string): void {
-    const detail = getOrder(orderId);
+  async advance(orderId: string, pharmacyId: string): Promise<void> {
+    const detail = await getOrder(orderId);
     if (!detail) return;
     const order = detail.order;
     if (order.pharmacyId !== pharmacyId) return;
@@ -127,13 +127,13 @@ export const orderService = {
     const patch: Partial<typeof orders.$inferInsert> = { status: ns, updatedAt: new Date() };
     if (ns === "assembled" && !order.stage2At) patch.stage2At = new Date();
     if (ns === "ready_pickup") patch.stage3At = new Date();
-    db.update(orders).set(patch).where(eq(orders.id, orderId)).run();
+    await db.update(orders).set(patch).where(eq(orders.id, orderId)).run();
   },
 };
 
-function getOrder(orderId: string) {
-  const order = db.select().from(orders).where(eq(orders.id,orderId)).get();
+async function getOrder(orderId: string) {
+  const order = await db.select().from(orders).where(eq(orders.id, orderId)).get();
   if (!order) return null;
-  const items = db.select().from(orderItems).where(eq(orderItems.orderId, orderId)).all();
+  const items = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId)).all();
   return { order, items };
 }

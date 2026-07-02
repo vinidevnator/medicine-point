@@ -2,9 +2,9 @@ import "server-only";
 
 type Bucket = { tokens: number; updatedAt: number };
 
-// In-memory, per-process token buckets. Adequate for a single instance (this
-// app runs on one better-sqlite3 process); swap for a shared store (e.g. Redis)
-// if the deployment is horizontally scaled.
+// In-memory, per-process token buckets. On serverless each instance keeps its
+// own buckets, so limits are best-effort there; swap for a shared store
+// (e.g. Redis/Upstash) if strict global limits are required.
 const buckets = new Map<string, Bucket>();
 
 export type RateLimitOptions = { limit: number; windowMs: number };

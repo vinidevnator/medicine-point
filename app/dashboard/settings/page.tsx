@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Configurações" };
 
 export default async function SettingsPage() {
   const session = await requirePharmacy();
-  const settings = pharmacyRepo.getSettings(session.pharmacyId);
+  const settings = await pharmacyRepo.getSettings(session.pharmacyId);
 
   if (!settings) return <Card>Configuração não encontrada.</Card>;
 

@@ -12,6 +12,6 @@ export async function GET(request: Request): Promise<Response> {
     );
   }
   const formatted = `${cep.slice(0, 5)}-${cep.slice(5)}`;
-  const offerings = searchService.findByEanAndCep(ean, formatted);
+  const offerings = await searchService.findByEanAndCep(ean, formatted);
   return NextResponse.json({ offerings });
 }

@@ -35,12 +35,12 @@ export const searchService = {
    * Locates pharmacies whose settings + stock can fulfill a given EAN for a CEP.
    * Always appends a distribution-center option (spec: always available).
    */
-  findByEanAndCep(ean: string, cep: string): PharmacyOffering[] {
+  async findByEanAndCep(ean: string, cep: string): Promise<PharmacyOffering[]> {
     const clientCoords = cepToCoords(cep);
     // The DC virtual pharmacy is presented via the synthetic block below only;
     // exclude it here so it never appears twice or with the wrong tempo/distance.
-    const allPharmacies = pharmacyRepo.allWithSettings().filter((r) => r.pharmacy.id !== DC_PHARMACY_ID);
-    const allProducts = productRepo.getByEanGlobal(ean);
+    const allPharmacies = (await pharmacyRepo.allWithSettings()).filter((r) => r.pharmacy.id !== DC_PHARMACY_ID);
+    const allProducts = await productRepo.getByEanGlobal(ean);
 
     const offerings: PharmacyOffering[] = [];
 
@@ -94,7 +94,7 @@ export const searchService = {
     offerings.sort((a, b) => a.distanceKm - b.distanceKm);
 
     if (!offerings.some((o) => o.pharmacyId === DC_PHARMACY_ID)) {
-      const dcRow = pharmacyRepo.get(DC_PHARMACY_ID);
+      const dcRow = await pharmacyRepo.get(DC_PHARMACY_ID);
       const dcDistance = dcRow ? haversineKm(clientCoords, { lat: dcRow.lat, lng: dcRow.lng }) : 0;
       const dcTemp = DC_TEMP_BY_DISTANCE.find((b) => dcDistance <= b.maxKm) ?? DC_TEMP_BY_DISTANCE[DC_TEMP_BY_DISTANCE.length - 1];
       // DC price must match what placeOrder charges: the global reference product

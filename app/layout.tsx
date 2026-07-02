@@ -8,14 +8,14 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: {
-    default: "Medicine Point — Marketplace de medicamentos",
-    template: "%s · Medicine Point",
+    default: "CPV — Marketplace de medicamentos",
+    template: "%s · CPV",
   },
   description:
     "Encontre medicamentos disponíveis em farmácias próximas via CEP. Retire na loja, receba por motoentrega ou pela Entrega de Parceiro.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   openGraph: {
-    title: "Medicine Point",
+    title: "CPV",
     description: "Marketplace de medicamentos com retirada, motoentrega e Entrega de Parceiro.",
     locale: "pt_BR",
     type: "website",

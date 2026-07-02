@@ -21,7 +21,7 @@ export const metadata: Metadata = { title: "Pedidos" };
 
 export default async function OrdersPage() {
   const session = await requirePharmacy();
-  const orders = orderRepo.listByPharmacy(session.pharmacyId);
+  const orders = await orderRepo.listByPharmacy(session.pharmacyId);
 
   return (
     <div className="space-y-6 animate-fade-in">
