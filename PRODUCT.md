@@ -13,7 +13,7 @@ Two distinct groups, both on the same platform:
 
 ## Product Purpose
 
-Medicine Point is a hyperlocal medicine marketplace: it connects consumers to nearby independent pharmacies so they can compare price and availability for a medicine and get it via pickup, moto delivery, or a distribution center, instead of calling around town. For pharmacies, it's a lightweight storefront and order-management tool that lets a local pharmacy compete on visibility without building their own e-commerce stack. Success looks like: a consumer finds and orders medicine faster than calling pharmacies one by one, and a pharmacy owner can manage listings/orders without confusion or training.
+CPV is a hyperlocal medicine marketplace: it connects consumers to nearby independent pharmacies so they can compare price and availability for a medicine and get it via pickup, moto delivery, or a distribution center, instead of calling around town. For pharmacies, it's a lightweight storefront and order-management tool that lets a local pharmacy compete on visibility without building their own e-commerce stack. Success looks like: a consumer finds and orders medicine faster than calling pharmacies one by one, and a pharmacy owner can manage listings/orders without confusion or training.
 
 ## Brand Personality
 

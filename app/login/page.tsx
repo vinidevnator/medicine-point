@@ -17,7 +17,7 @@ export default function EntrarPage() {
             Gerencie produtos, pedidos e configurações de entrega do seu ponto de coleta.
           </p>
         </div>
-        <p className="text-caption opacity-70">© {new Date().getFullYear()} Medicine Point</p>
+        <p className="text-caption opacity-70">© {new Date().getFullYear()} CPV</p>
       </aside>
       <div className="flex flex-col px-6 py-10 md:items-center md:justify-center">
         <div className="mb-8 flex items-center justify-between md:hidden">

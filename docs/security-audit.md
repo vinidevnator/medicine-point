@@ -1,4 +1,4 @@
-# Security Audit — medicine-point
+# Security Audit — cpv
 
 Stack: Next.js 16.2.9 (App Router) / React 19.2.4 / TypeScript strict / Drizzle + better-sqlite3.
 Read-only audit — **no source files were changed**. Every finding was verified against the actual code.

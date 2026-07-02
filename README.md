@@ -1,8 +1,8 @@
-# Medicine Point
+# CPV
 
 > Plataforma para digitalização e gestão do estoque de farmácias independentes, conectando seus medicamentos a consumidores da região por meio de um marketplace hiperlocal e de uma rede de pontos de coleta.
 
-O Medicine Point foi concebido com foco nas farmácias. A plataforma permite que estabelecimentos se cadastrem, registrem seu estoque de medicamentos, disponibilidade, pedidos e acompanhem relatórios de desempenho. A partir desse cadastro, os produtos passam a compor um marketplace hiperlocal, permitindo que consumidores encontrem medicamentos disponíveis por CEP, comparem preços e escolham entre retirada na farmácia, motoentrega ou entrega pelo centro de distribuição.
+O CPV foi concebido com foco nas farmácias. A plataforma permite que estabelecimentos se cadastrem, registrem seu estoque de medicamentos, disponibilidade, pedidos e acompanhem relatórios de desempenho. A partir desse cadastro, os produtos passam a compor um marketplace hiperlocal, permitindo que consumidores encontrem medicamentos disponíveis por CEP, comparem preços e escolham entre retirada na farmácia, motoentrega ou entrega pelo centro de distribuição.
 
 ---
 
@@ -14,6 +14,7 @@ O Medicine Point foi concebido com foco nas farmácias. A plataforma permite que
 - [Tailwind CSS](https://tailwindcss.com) **v4** com `@tailwindcss/postcss`
 - [Drizzle ORM](https://orm.drizzle.team) + [libSQL/Turso](https://turso.tech) (arquivo SQLite local em desenvolvimento)
 - Autenticação com [jose](https://github.com/panva/jose) + [bcryptjs](https://github.com/dcodeIO/bcrypt.js)
+- [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) (`@openai/agents`) — assistente de entrega
 - Validação com [Zod](https://zod.dev)
 - Ícones com [Lucide React](https://lucide.dev)
 - Gráficos com [Recharts](https://recharts.org)
@@ -92,18 +93,23 @@ O Medicine Point foi concebido com foco nas farmácias. A plataforma permite que
 ## Estrutura do projeto
 
 - `app/` — raiz da aplicação Next.js (App Router)
-- `db/` — schema, migrations, seed e configuração do Drizzle ORM
-- `lib/` — utilitários e helpers compartilhados
+- `actions/` — Server Actions (autenticação, pedidos, produtos, configurações)
 - `components/` — componentes React reutilizáveis
+- `db/` — schema, migrations, seed e configuração do Drizzle ORM
+- `docs/` — documentação interna (design, auditoria de segurança, notas de refatoração)
+- `lib/` — utilitários e helpers compartilhados
+- `public/` — arquivos estáticos
+- `repositories/` — camada de acesso a dados (queries Drizzle)
 - `services/` — lógica de domínio (ex.: assistente de entrega)
 - `scripts/` — scripts auxiliares (bootstrap)
+- `proxy.ts` — proxy de requisições (convenção `proxy` do Next.js)
 - Não há diretório `src/`; o alias `@/*` resolve para a raiz do projeto.
 
 ---
 
 ## Deploy
 
-O projeto pode ser implantado na [Vercel](https://vercel.com) ou em qualquer ambiente compatível com Next.js. Consulte a [documentação de deploy do Next.js](https://nextjs.org/docs/app/building-your-application/deploying) para mais detalhes.
+O projeto pode ser implantado na [Vercel](https://vercel.com) ou em qualquer ambiente compatível com Next.js. Consulte a [documentação de deploy do Next.js](https://nextjs.org/docs/app/getting-started/deploying) para mais detalhes.
 
 Como o filesystem serverless da Vercel é efêmero, o banco em arquivo local não persiste em produção. Configure um banco [Turso](https://turso.tech) e defina as variáveis de ambiente no projeto da Vercel:
 
@@ -116,11 +122,11 @@ O `prebuild` aplica as migrations e o seed idempotente contra o banco configurad
 
 ---
 
-# Medicine Point (English)
+# CPV (English)
 
 > Platform for digitizing and managing the inventory of independent pharmacies, connecting their medicines with local consumers through a hyperlocal marketplace and a network of collection points.
 
-Medicine Point was designed with pharmacies as its primary focus. The platform enables pharmacies to register, manage their medicine inventory, track product availability, process orders, and monitor performance through reports and analytics. Once their inventory is registered, products become available in a hyperlocal marketplace, allowing consumers to search for medicines by ZIP code, compare prices, and choose between in-store pickup, motorcycle delivery, or fulfillment through a distribution center.
+CPV was designed with pharmacies as its primary focus. The platform enables pharmacies to register, manage their medicine inventory, track product availability, process orders, and monitor performance through reports and analytics. Once their inventory is registered, products become available in a hyperlocal marketplace, allowing consumers to search for medicines by ZIP code, compare prices, and choose between in-store pickup, motorcycle delivery, or fulfillment through a distribution center.
 
 ---
 
@@ -132,6 +138,7 @@ Medicine Point was designed with pharmacies as its primary focus. The platform e
 - [Tailwind CSS](https://tailwindcss.com) **v4** with `@tailwindcss/postcss`
 - [Drizzle ORM](https://orm.drizzle.team) + [libSQL/Turso](https://turso.tech) (local SQLite file in development)
 - Auth with [jose](https://github.com/panva/jose) + [bcryptjs](https://github.com/dcodeIO/bcrypt.js)
+- [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/) (`@openai/agents`) — delivery advisor
 - Validation with [Zod](https://zod.dev)
 - Icons with [Lucide React](https://lucide.dev)
 - Charts with [Recharts](https://recharts.org)
@@ -210,18 +217,23 @@ Medicine Point was designed with pharmacies as its primary focus. The platform e
 ## Project Structure
 
 - `app/` — Next.js application root (App Router)
-- `db/` — Drizzle ORM schema, migrations, seed, and config
-- `lib/` — shared utilities and helpers
+- `actions/` — Server Actions (auth, orders, products, settings)
 - `components/` — reusable React components
+- `db/` — Drizzle ORM schema, migrations, seed, and config
+- `docs/` — internal docs (design, security audit, refactor notes)
+- `lib/` — shared utilities and helpers
+- `public/` — static assets
+- `repositories/` — data access layer (Drizzle queries)
 - `services/` — domain logic (e.g., delivery advisor)
 - `scripts/` — auxiliary scripts (bootstrap)
+- `proxy.ts` — request proxy entry (Next.js `proxy` convention)
 - There is no `src/` directory; the `@/*` alias resolves to the project root.
 
 ---
 
 ## Deploy
 
-This project can be deployed on [Vercel](https://vercel.com) or any Next.js-compatible hosting. See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for details.
+This project can be deployed on [Vercel](https://vercel.com) or any Next.js-compatible hosting. See the [Next.js deployment docs](https://nextjs.org/docs/app/getting-started/deploying) for details.
 
 Because Vercel's serverless filesystem is ephemeral, the local file database does not persist in production. Provision a [Turso](https://turso.tech) database and set these environment variables on the Vercel project:
 

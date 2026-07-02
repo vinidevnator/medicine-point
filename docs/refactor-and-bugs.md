@@ -1,4 +1,4 @@
-# Refactor Map & Bug Hunt — medicine-point
+# Refactor Map & Bug Hunt — cpv
 
 Stack: Next.js 16.2.9 (App Router) / React 19.2.4 / TypeScript strict. Read-only catalogue — **no source files were changed**. Every finding was verified against the actual code.
 

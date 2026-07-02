@@ -5,7 +5,7 @@ export default defineConfig({
   schema: "./db/schema/index.ts",
   out: "./db/migrations",
   dbCredentials: {
-    url: process.env.TURSO_DATABASE_URL ?? "file:medicine-point.db",
+    url: process.env.TURSO_DATABASE_URL ?? "file:cpv.db",
     authToken: process.env.TURSO_AUTH_TOKEN,
   },
   verbose: true,

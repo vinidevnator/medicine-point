@@ -1,5 +1,5 @@
 ---
-name: Medicine Point
+name: CPV
 description: A hyperlocal medicine marketplace wearing institutional pink instead of clinical blue.
 colors:
   primary: "#F51C79"
@@ -109,13 +109,13 @@ components:
     rounded: "{rounded.pill}"
 ---
 
-# Design System: Medicine Point
+# Design System: CPV
 
 ## 1. Overview
 
 **Creative North Star: "The Institutional Pink"**
 
-Medicine Point is a hyperlocal medicine marketplace, and this system leads with a warm, saturated institutional pink (`#F51C79`) rather than the sterile blues and grays of a hospital intranet — a direct answer to PRODUCT.md's anti-reference against feeling "cold or clinical like a hospital intranet or insurance portal." Pink carries the calls-to-action, links, and active states; deep purple (`#5A2D82`) and sky blue (`#00A3E0`) sit underneath as branding accents; a pale pink tint (`#FBE3EE`) softens backgrounds without diluting the primary color's saturation. The palette is deliberately more "modern e-commerce" than "healthcare portal," matching the brand personality PRODUCT.md calls for: trustworthy, calm, and fast, but not slow or bureaucratic.
+CPV is a hyperlocal medicine marketplace, and this system leads with a warm, saturated institutional pink (`#F51C79`) rather than the sterile blues and grays of a hospital intranet — a direct answer to PRODUCT.md's anti-reference against feeling "cold or clinical like a hospital intranet or insurance portal." Pink carries the calls-to-action, links, and active states; deep purple (`#5A2D82`) and sky blue (`#00A3E0`) sit underneath as branding accents; a pale pink tint (`#FBE3EE`) softens backgrounds without diluting the primary color's saturation. The palette is deliberately more "modern e-commerce" than "healthcare portal," matching the brand personality PRODUCT.md calls for: trustworthy, calm, and fast, but not slow or bureaucratic.
 
 **Important note on status:** this DESIGN.md documents the *target* visual system, translated from prior visual research (`docs/design.md`) into the formal token spec. It does not yet match the shipped code, which currently runs a generic blue/slate shadcn-style theme (`app/globals.css`). Treat this file as the spec to redesign the implementation toward, not a record of what's live today.
 

@@ -9,7 +9,7 @@ import bcrypt from "bcryptjs";
 import path from "node:path";
 import { DC_PHARMACY_ID } from "../lib/constants";
 
-const DB_URL = process.env.TURSO_DATABASE_URL ?? "file:medicine-point.db";
+const DB_URL = process.env.TURSO_DATABASE_URL ?? "file:cpv.db";
 const MIGRATIONS_FOLDER = path.resolve(process.cwd(), "db/migrations");
 
 const SEED_PRODUCTS = [
@@ -51,9 +51,9 @@ async function ensureDcPharmacy(db: ReturnType<typeof drizzle>): Promise<void> {
       .values({
         id: DC_PHARMACY_ID,
         cnpj: "00.000.000/0001-00",
-        legalName: "Entrega de Parceiro Medicine Point",
+        legalName: "Entrega de Parceiro CPV",
         tradeName: "Entrega de Parceiro",
-        email: "dc@medicinepoint.internal",
+        email: "dc@cpv.internal",
         cep: "00000-000",
         street: "Entrega de Parceiro",
         number: "0",
@@ -120,7 +120,7 @@ async function run(): Promise<void> {
         cnpj: "12.345.678/0001-90",
         legalName: "Drogasil Demo Ltda",
         tradeName: "Drogasil Demo",
-        email: "demo@medicinepoint.com.br",
+        email: "demo@cpv.com.br",
         cep: "01310-100",
         street: "Avenida Paulista",
         number: "1000",
@@ -150,7 +150,7 @@ async function run(): Promise<void> {
     await tx.insert(users)
       .values({
         id: userId,
-        email: "demo@medicinepoint.com.br",
+        email: "demo@cpv.com.br",
         passwordHash,
         role: "pharmacy_admin",
         pharmacyId,
@@ -175,7 +175,7 @@ async function run(): Promise<void> {
   });
 
   console.log("[seed] demo pharmacy created.");
-  console.log("      login: demo@medicinepoint.com.br");
+  console.log("      login: demo@cpv.com.br");
   console.log("      senha: demo12345");
 }
 

@@ -31,7 +31,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-border py-4 text-center text-caption text-muted-foreground">
-        © {new Date().getFullYear()} Medicine Point — Demonstração (dados fictícios).
+        © {new Date().getFullYear()} CPV — Demonstração (dados fictícios).
       </div>
     </footer>
   );

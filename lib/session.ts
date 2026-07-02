@@ -20,7 +20,7 @@ async function encrypt(payload: SessionPayload): Promise<string> {
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: ALG })
     .setIssuedAt()
-    .setIssuer("medicine-point")
+    .setIssuer("cpv")
     .setExpirationTime("7d")
     .sign(encodedKey);
 }

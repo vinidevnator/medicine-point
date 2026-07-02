@@ -6,7 +6,7 @@ export function Logo(props: { className?: string; tone?: "brand" | "onDark" }) {
   return (
     <Image
       src="/img/logo.webp"
-      alt="Medicine Point"
+      alt="CPV"
       width={154}
       height={36}
       className={cn("h-9 w-auto shrink-0", className)}

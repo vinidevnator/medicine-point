@@ -168,7 +168,7 @@ export function HomeClient({
                 Plataforma para Farmácias
               </span>
               <h1 className="mt-4 text-display font-bold tracking-tight text-balance">
-                Venda mais com o <span className="text-primary">Medicine Point</span>.
+                Venda mais com o <span className="text-primary">CPV</span>.
               </h1>
               <p className="mt-4 max-w-md text-body text-muted-foreground">
                 Cadastre-se, configure seu catálogo de medicamentos e comece a atender clientes da sua região usando seu próprio estoque — sem complicações.
@@ -283,7 +283,7 @@ export function HomeClient({
       <section className="mx-auto max-w-7xl px-4 py-14 md:px-6">
         {isConsumer ? (
           <>
-            <h2 className="mb-8 text-center text-[28px] font-bold">Por que usar o Medicine Point?</h2>
+            <h2 className="mb-8 text-center text-[28px] font-bold">Por que usar o CPV?</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {CONSUMER_TRUST.map(({ icon: Icon, title, description }) => (
                 <Card key={title} className="flex flex-col items-center gap-4 text-center">

@@ -4,7 +4,7 @@ import * as schema from "./schema";
 
 // Local dev falls back to a file-based database; production (Vercel) must point
 // at a remote Turso database because the serverless filesystem is ephemeral.
-const url = process.env.TURSO_DATABASE_URL ?? "file:medicine-point.db";
+const url = process.env.TURSO_DATABASE_URL ?? "file:cpv.db";
 const authToken = process.env.TURSO_AUTH_TOKEN;
 
 if (!process.env.TURSO_DATABASE_URL && process.env.VERCEL) {

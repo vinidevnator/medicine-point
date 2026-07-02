@@ -30,7 +30,7 @@ export function LoginForm() {
         Não tem conta? <Link href="/register" className="font-medium text-primary hover:underline">Cadastrar farmácia</Link>
       </p>
       <p className="rounded-lg bg-muted px-3.5 py-2.5 text-center text-caption text-muted-foreground">
-        Demo: <strong>demo@medicinepoint.com.br</strong> / <strong>demo12345</strong>
+        Demo: <strong>demo@cpv.com.br</strong> / <strong>demo12345</strong>
       </p>
     </form>
   );
