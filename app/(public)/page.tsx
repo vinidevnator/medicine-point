@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Store, Motorbike, Truck, ArrowRight } from "lucide-react";
+import { Store, Motorbike, CircleCheck, ArrowRight } from "lucide-react";
 import { CATEGORIES, DC_PHARMACY_ID } from "@/lib/constants";
 import { categoryIcon } from "@/lib/category-icons";
 import { productRepo, pharmacyRepo } from "@/repositories";
@@ -43,7 +43,7 @@ export default function HomePage() {
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-body-sm font-medium text-primary-pressed">
               <span className="inline-flex items-center gap-1.5"><Store className="size-4" aria-hidden /> Retirada</span>
               <span className="inline-flex items-center gap-1.5"><Motorbike className="size-4" aria-hidden /> Motoentrega</span>
-              <span className="inline-flex items-center gap-1.5"><Truck className="size-4" aria-hidden /> Centro de distribuição</span>
+              <span className="inline-flex items-center gap-1.5"><CircleCheck className="size-4" aria-hidden /> Entrega de Parceiro</span>
             </div>
             <h1 className="mt-4 text-display font-bold tracking-tight text-balance">
               Medicamentos perto de você, com um <span className="text-primary">CEP</span>.

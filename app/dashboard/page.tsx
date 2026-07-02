@@ -20,7 +20,7 @@ export default async function DashboardPage() {
   const pieData = [
     { name: "Retirada", value: report.byPickup },
     { name: "Moto", value: report.byMoto },
-    { name: "Distribuição", value: report.byDistribution },
+    { name: "Parceiro", value: report.byDistribution },
   ].filter((d) => d.value > 0);
 
   const recent = orderRepo.listByPharmacy(session.pharmacyId).slice(0, 5);

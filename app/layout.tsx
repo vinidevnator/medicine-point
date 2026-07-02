@@ -12,11 +12,11 @@ export const metadata: Metadata = {
     template: "%s · Medicine Point",
   },
   description:
-    "Encontre medicamentos disponíveis em farmácias próximas via CEP. Retire na loja, receba por motoentrega ou pelo centro de distribuição.",
+    "Encontre medicamentos disponíveis em farmácias próximas via CEP. Retire na loja, receba por motoentrega ou pela Entrega de Parceiro.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   openGraph: {
     title: "Medicine Point",
-    description: "Marketplace de medicamentos com retirada, motoentrega e centro de distribuição.",
+    description: "Marketplace de medicamentos com retirada, motoentrega e Entrega de Parceiro.",
     locale: "pt_BR",
     type: "website",
   },

@@ -102,7 +102,7 @@ export const searchService = {
       const dcReferencePrice = allProducts[0]?.priceCents ?? offerings[0]?.priceCents ?? 0;
       offerings.push({
         pharmacyId: DC_PHARMACY_ID,
-        tradeName: "Centro de Distribuição",
+        tradeName: "Entrega de Parceiro",
         distanceKm: Math.round(dcDistance * 10) / 10,
         quantity: 999,
         priceCents: dcReferencePrice,

@@ -25,7 +25,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
   const pieData = [
     { name: "Retirada", value: report.byPickup },
     { name: "Moto", value: report.byMoto },
-    { name: "Distribuição", value: report.byDistribution },
+    { name: "Parceiro", value: report.byDistribution },
   ].filter((d) => d.value > 0);
   const topBar = report.topProducts.map((p) => ({ name: p.name.slice(0, 14), quantidade: p.quantity }));
 
@@ -44,7 +44,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
         <Stat label="Receita" value={formatBRL(report.revenueCents)} />
         <Stat label="Pedidos por retirada" value={report.byPickup} />
         <Stat label="Pedidos por moto" value={report.byMoto} />
-        <Stat label="Pedidos por distribuição" value={report.byDistribution} />
+        <Stat label="Pedidos por parceiro" value={report.byDistribution} />
         <Stat label="Itens no topo" value={report.topProducts.length} />
       </div>
 

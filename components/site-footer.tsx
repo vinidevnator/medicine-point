@@ -9,7 +9,7 @@ export function SiteFooter() {
         <div className="md:col-span-2">
           <Logo />
           <p className="mt-3 max-w-sm text-body-sm text-muted-foreground">
-            Marketplace de medicamentos. Encontre farmácias próximas, retire na loja, receba por motoentrega ou pelo centro de distribuição.
+            Marketplace de medicamentos. Encontre farmácias próximas, retire na loja, receba por motoentrega ou pela Entrega de Parceiro.
           </p>
         </div>
         <div>

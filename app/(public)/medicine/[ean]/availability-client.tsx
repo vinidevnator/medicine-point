@@ -82,7 +82,7 @@ type Tab = "delivery" | "pickup";
 const TYPE_LABEL: Record<DeliveryType, string> = {
   pickup: "Retirada",
   moto: "Moto",
-  distribution: "Centro de distribuição",
+  distribution: "Entrega de Parceiro",
 };
 
 const isDelivery = (t: DeliveryType) => t === "moto" || t === "distribution";

@@ -60,7 +60,7 @@ function buildAgent() {
   return new Agent({
     name: "Delivery Advisor",
     model,
-    instructions: `Você é um assistente que ajuda um cliente de farmácia a escolher a melhor forma de receber um medicamento entre três opções: "pickup" (retirada na loja), "moto" (moto entrega) e "distribution" (centro de distribuição).
+    instructions: `Você é um assistente que ajuda um cliente de farmácia a escolher a melhor forma de receber um medicamento entre três opções: "pickup" (retirada na loja), "moto" (moto entrega) e "distribution" (Entrega de Parceiro).
 
 Regras:
 1. Você sempre recebe uma lista de opções já calculadas, cada uma com preço total (em centavos) e tempo estimado (em minutos).

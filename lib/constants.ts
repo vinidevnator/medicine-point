@@ -17,7 +17,7 @@ export const REVENUE_OPTIONS = [
 export const DELIVERY_TYPES = {
   pickup: { label: "Retirada na loja", timeMin: 30 },
   moto: { label: "Moto entrega", timeMin: 120 },
-  distribution: { label: "Centro de distribuição", timeMin: 360 },
+  distribution: { label: "Entrega de Parceiro", timeMin: 360 },
 } as const;
 
 export const SP_BBOX = { minLat: -23.9, maxLat: -23.3, minLng: -46.9, maxLng: -46.3 };

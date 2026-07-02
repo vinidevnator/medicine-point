@@ -51,11 +51,11 @@ function ensureDcPharmacy(db: ReturnType<typeof drizzle>): void {
       .values({
         id: DC_PHARMACY_ID,
         cnpj: "00.000.000/0001-00",
-        legalName: "Centro de Distribuição Medicine Point",
-        tradeName: "Centro de Distribuição",
+        legalName: "Entrega de Parceiro Medicine Point",
+        tradeName: "Entrega de Parceiro",
         email: "dc@medicinepoint.internal",
         cep: "00000-000",
-        street: "Centro de Distribuição",
+        street: "Entrega de Parceiro",
         number: "0",
         complement: "",
         district: "-",
@@ -80,7 +80,7 @@ function ensureDcPharmacy(db: ReturnType<typeof drizzle>): void {
       .run();
   });
 
-  console.log("[seed] Centro de Distribuição virtual pharmacy created.");
+  console.log("[seed] Entrega de Parceiro virtual pharmacy created.");
 }
 
 function run() {
