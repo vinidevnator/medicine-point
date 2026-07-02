@@ -1,8 +1,8 @@
 # Medicine Point
 
-> Marketplace hiperlocal de medicamentos que conecta consumidores a farmácias independentes próximas.
+> Plataforma para digitalização e gestão do estoque de farmácias independentes, conectando seus medicamentos a consumidores da região por meio de um marketplace hiperlocal e de uma rede de pontos de coleta.
 
-O **Medicine Point** permite que consumidores encontrem medicamentos disponíveis por CEP, comparem preços e escolham entre retirada na loja, motoentrega ou entrega pelo centro de distribuição. Para farmácias, é uma vitrine e ferramenta de gestão de pedidos leve, com catálogo, estoque, preços e relatórios.
+O Medicine Point foi concebido com foco nas farmácias. A plataforma permite que estabelecimentos se cadastrem, registrem seu estoque de medicamentos, disponibilidade, pedidos e acompanhem relatórios de desempenho. A partir desse cadastro, os produtos passam a compor um marketplace hiperlocal, permitindo que consumidores encontrem medicamentos disponíveis por CEP, comparem preços e escolham entre retirada na farmácia, motoentrega ou entrega pelo centro de distribuição.
 
 ---
 
@@ -109,9 +109,9 @@ O projeto pode ser implantado na [Vercel](https://vercel.com) ou em qualquer amb
 
 # Medicine Point (English)
 
-> A hyperlocal medicine marketplace connecting consumers to nearby independent pharmacies.
+> Platform for digitizing and managing the inventory of independent pharmacies, connecting their medicines with local consumers through a hyperlocal marketplace and a network of collection points.
 
-**Medicine Point** lets consumers find available medicines by ZIP code, compare prices, and choose between in-store pickup, motorcycle delivery, or distribution-center delivery. For pharmacies, it is a lightweight storefront and order-management tool with catalog, stock, pricing, and reports.
+Medicine Point was designed with pharmacies as its primary focus. The platform enables pharmacies to register, manage their medicine inventory, track product availability, process orders, and monitor performance through reports and analytics. Once their inventory is registered, products become available in a hyperlocal marketplace, allowing consumers to search for medicines by ZIP code, compare prices, and choose between in-store pickup, motorcycle delivery, or fulfillment through a distribution center.
 
 ---
 

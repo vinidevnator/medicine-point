@@ -2,9 +2,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, ShoppingCart, Store } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Logo } from "@/components/logo";
+import { usePersona, type Persona } from "@/components/persona-context";
 import { Drawer } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,11 +19,42 @@ const navLinks = [
   { href: "/search?cat=analgesico", label: "Analgésicos" },
 ];
 
-export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
+function PersonaToggle({ className }: { className?: string }) {
+  const { persona, setPersona } = usePersona();
+  const options: Array<{ value: Persona; label: string; icon: typeof Store }> = [
+    { value: "pharmacy", label: "Farmácia", icon: Store },
+    { value: "consumer", label: "Consumidor", icon: ShoppingCart },
+  ];
+  return (
+    <div className={cn("flex items-center gap-1 rounded-pill bg-muted p-1", className)}>
+      {options.map(({ value, label, icon: Icon }) => (
+        <button
+          key={value}
+          type="button"
+          onClick={() => setPersona(value)}
+          aria-pressed={persona === value}
+          className={cn(
+            "inline-flex flex-1 items-center justify-center gap-1.5 rounded-pill px-3 py-1.5 text-body-sm font-semibold transition-colors duration-150",
+            persona === value
+              ? "bg-primary text-primary-foreground shadow-hover"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Icon className="size-3.5" aria-hidden />
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+export function SiteHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const isHome = pathname === "/";
+  const showSearch = pathname === "/search";
 
   function submitSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -83,9 +115,13 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
           <ThemeToggle />
-          <Link href="/login">
-            <Button variant="secondary" size="sm">Sou Farmácia</Button>
-          </Link>
+          {isHome ? (
+            <PersonaToggle />
+          ) : (
+            <Link href="/login">
+              <Button variant="secondary" size="sm">Sou Farmácia</Button>
+            </Link>
+          )}
           <Link href="/register">
             <Button size="sm">Cadastrar</Button>
           </Link>
@@ -101,6 +137,7 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
       </header>
 
       <Drawer open={open} onClose={() => setOpen(false)} title="Navegação">
+        {isHome && <PersonaToggle className="mb-4 w-full" />}
         {showSearch && (
           <form
             onSubmit={(e) => {

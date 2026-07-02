@@ -13,7 +13,7 @@ export type ProductCardData = {
   quantity?: number;
 };
 
-export function ProductCard({ product }: { product: ProductCardData }) {
+export function ProductCard({ product, footnote }: { product: ProductCardData; footnote?: string }) {
   const inStock = (product.quantity ?? 0) > 0;
   return (
     <Link href={`/medicine/${product.ean}`} className="group block focus-visible:outline-none">
@@ -38,6 +38,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <span className="text-[19px] font-bold text-foreground">{formatBRL(product.priceCents)}</span>
             <Badge tone={inStock ? "success" : "danger"}>{inStock ? "Disponível" : "Esgotado"}</Badge>
           </div>
+          {footnote && <p className="mt-1.5 text-caption text-muted-foreground">{footnote}</p>}
         </div>
       </Card>
     </Link>
