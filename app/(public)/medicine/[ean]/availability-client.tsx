@@ -414,6 +414,11 @@ export function AvailabilityClient({
               </div>
               <p className="text-body font-semibold text-foreground">{recommendation.summary}</p>
               <p className="text-body-sm text-muted-foreground">{recommendation.rationale}</p>
+              {recommendation.bestOption === "pickup" && target && (
+                <p className="flex items-start gap-1.5 text-body-sm font-medium text-foreground">
+                  <Store className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden /> Retirar em <strong>{target.tradeName}</strong>
+                </p>
+              )}
               {recommendation.weatherAlert && (
                 <p className="flex items-start gap-1.5 text-body-sm text-warning-ink">
                   <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden /> {recommendation.weatherConsidered}
