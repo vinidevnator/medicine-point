@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { requirePharmacy } from "@/services/auth-guard.service";
 import { productRepo } from "@/repositories";
@@ -5,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ProductFormDialog, DeleteProductButton } from "@/components/dashboard/product-dialog";
 import { formatBRL } from "@/lib/format";
+
+export const metadata: Metadata = { title: "Produtos" };
 
 export default async function ProductsPage() {
   const session = await requirePharmacy();

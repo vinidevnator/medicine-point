@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { requirePharmacy } from "@/services/auth-guard.service";
 import { reportService, type ReportFilter } from "@/services/report.service";
 import { Card } from "@/components/ui/card";
@@ -5,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { BarChartCard, LineChartCard, PieChartCard } from "@/components/charts";
 import { ReportFilters } from "@/components/dashboard/report-filters";
 import { formatBRL, parseDateInputToUnix } from "@/lib/format";
+
+export const metadata: Metadata = { title: "Relatórios" };
 
 type SearchParams = Promise<{ f?: string; from?: string; to?: string }>;
 

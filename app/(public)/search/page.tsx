@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { CATEGORIES } from "@/lib/constants";
 import { categoryIcon } from "@/lib/category-icons";
 import { productRepo } from "@/repositories";
@@ -6,6 +7,24 @@ import { Card } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 
 type SearchParams = Promise<{ q?: string; cat?: string }>;
+
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const { q, cat } = await searchParams;
+  const query = (q ?? "").trim();
+  const category = cat ?? "";
+  const categoryLabel = CATEGORIES.find((c) => c.slug === category)?.label;
+
+  let title = "Todos os medicamentos";
+  if (query && categoryLabel) {
+    title = `Resultados para "${query}" em ${categoryLabel}`;
+  } else if (query) {
+    title = `Resultados para "${query}"`;
+  } else if (categoryLabel) {
+    title = categoryLabel;
+  }
+
+  return { title };
+}
 
 export default async function SearchPage({ searchParams }: { searchParams: SearchParams }) {
   const { q, cat } = await searchParams;

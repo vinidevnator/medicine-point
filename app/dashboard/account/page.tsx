@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { requirePharmacy } from "@/services/auth-guard.service";
 import { pharmacyRepo } from "@/repositories";
 import { Card } from "@/components/ui/card";
 import { AccountForm } from "@/components/dashboard/account-form";
+
+export const metadata: Metadata = { title: "Minha Conta" };
 
 export default async function AccountPage() {
   const session = await requirePharmacy();

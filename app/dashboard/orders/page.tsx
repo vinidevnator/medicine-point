@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { requirePharmacy } from "@/services/auth-guard.service";
@@ -15,6 +16,8 @@ const NEXT_LABEL: Record<string, string | null> = {
   ready_pickup: "Finalizar pedido",
   completed: null,
 };
+
+export const metadata: Metadata = { title: "Pedidos" };
 
 export default async function OrdersPage() {
   const session = await requirePharmacy();

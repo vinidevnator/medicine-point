@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { requirePharmacy } from "@/services/auth-guard.service";
 import { pharmacyRepo } from "@/repositories";
 import { Card } from "@/components/ui/card";
 import { SettingsForm } from "@/components/dashboard/settings-form";
+
+export const metadata: Metadata = { title: "Configurações" };
 
 export default async function SettingsPage() {
   const session = await requirePharmacy();

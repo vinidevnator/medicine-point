@@ -31,8 +31,9 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/75">
-      <div className="mx-auto flex h-[72px] max-w-7xl items-center gap-4 px-4 md:px-6">
+    <>
+      <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/75">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center gap-4 px-4 md:px-6">
         <button
           className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-border md:hidden"
           onClick={() => setOpen(true)}
@@ -97,6 +98,7 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
           </Link>
         </div>
       </div>
+      </header>
 
       <Drawer open={open} onClose={() => setOpen(false)} title="Navegação">
         {showSearch && (
@@ -141,6 +143,6 @@ export function SiteHeader({ showSearch = true }: { showSearch?: boolean }) {
           </li>
         </ul>
       </Drawer>
-    </header>
+    </>
   );
 }

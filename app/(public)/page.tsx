@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Store, Motorbike, Truck, ArrowRight } from "lucide-react";
 import { CATEGORIES, DC_PHARMACY_ID } from "@/lib/constants";
@@ -11,6 +12,10 @@ import { Input } from "@/components/ui/input";
 // Reads live DB state (featured products, active-pharmacy count); must not be
 // frozen at build time.
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Medicamentos perto de você",
+};
 
 export default function HomePage() {
   const distinct = productRepo.listDistinctEans();

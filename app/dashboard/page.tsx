@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Pill, ShoppingCart, Calendar, Package, Bike, DollarSign } from "lucide-react";
 import { requirePharmacy } from "@/services/auth-guard.service";
@@ -8,6 +9,8 @@ import { BarChartCard, LineChartCard, PieChartCard } from "@/components/charts";
 import { orderRepo } from "@/repositories";
 import { formatBRL } from "@/lib/format";
 import { ORDER_STATUS_LABEL } from "@/lib/constants";
+
+export const metadata: Metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
   const session = await requirePharmacy();
